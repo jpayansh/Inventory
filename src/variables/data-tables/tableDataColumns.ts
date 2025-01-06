@@ -8,7 +8,7 @@ type RowObj = {
 const tableDataColumns: RowObj[] = [
   {
     name: 'Horizon UI PRO',
-    quantity: 2458,
+    quantity: 458,
     progress: '17.5%',
     date: '12 Jan 2021',
   },

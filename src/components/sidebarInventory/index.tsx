@@ -2,8 +2,10 @@
 
 import { HiX } from 'react-icons/hi';
 import Links from '../sidebar/components/Links';
-
+import Logo from '/public/img/logo/logo.png';
 import { IRoute } from 'types/navigation';
+import Image from 'next/image';
+import LightLogo from "/public/img/logo/logo-light.png"
 
 function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
   const { routes, open, setOpen } = props;
@@ -20,9 +22,22 @@ function SidebarHorizon(props: { routes: IRoute[]; [x: string]: any }) {
         <HiX />
       </span>
 
-      <div className={`mx-[56px] mt-[50px] flex items-center`}>
+      <div className={`mx-[56px] mt-[30px] flex items-center`}>
         <div className="ml-1 mt-1 h-2.5 font-poppins text-[26px] font-bold uppercase text-navy-700 dark:text-white">
-          Inventory
+        <Image
+            width="1"
+            height="20"
+            className="mb-3 w-[120px] rounded-xl 3xl:h-full 3xl:w-full dark:hidden"
+            src={Logo}
+            alt=""
+          />
+          <Image
+            width="1"
+            height="20"
+            className="mb-3 w-[120px] rounded-xl 3xl:h-full 3xl:w-full hidden dark:block"
+            src={LightLogo}
+            alt=""
+          />
         </div>
       </div>
       <div className="mb-7 mt-[58px] h-px bg-gray-300 dark:bg-white/30" />

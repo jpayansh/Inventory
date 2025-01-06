@@ -20,7 +20,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (isWindowAvailable()) document.documentElement.dir = 'ltr';
   return (
-    <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
+    <div className="flex h-full w-full bg-gray-200 dark:bg-background-900">
       <Sidebar routes={routes} open={open} setOpen={setOpen} variant="admin" />
       {/* Navbar & Main Content */}
       <div className="h-full w-full font-dm dark:bg-navy-900">
