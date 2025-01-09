@@ -254,7 +254,6 @@ export const inventory = [
 export const products = [
   {
     name: 'Tirrent Booster',
-
     quantities: [
       { quantity: 50, code: 'TG005TB', price: 500 },
       { quantity: 250, code: 'TG001TB', price: 2500 },
@@ -268,45 +267,45 @@ export const products = [
   {
     name: 'Fuel Conditioner',
 
-    quantities: [
-      { quantity: 40, code: 'TG005FC', price: 400 },
-      { quantity: 355, code: 'TG001FC', price: 3550 },
+    // quantities: [
+    //   { quantity: 40, code: 'TG005FC', price: 400 },
+    //   { quantity: 355, code: 'TG001FC', price: 3550 },
 
-      { quantity: 19000, code: 'TG001FC', price: 19000 },
-      { quantity: 208000, code: 'TG001FC', price: 208000 },
-    ],
-    siUnit: 'ml',
+    //   { quantity: 19000, code: 'TG001FC', price: 19000 },
+    //   { quantity: 208000, code: 'TG001FC', price: 208000 },
+    // ],
+    // siUnit: 'ml',
   },
   {
     name: 'Spray',
-    quantities: [
-      { quantity: 100, code: 'TG005TG', price: 1000 },
-      { quantity: 200, code: 'TG001TG', price: 2000 },
-      { quantity: 4000, code: 'TG040TG', price: 4000 },
-      { quantity: 19000, code: 'TG001TG', price: 19000 },
-      { quantity: 20800, code: 'TG001TG', price: 208000 },
-    ],
-    siUnit: 'ml',
+    // quantities: [
+    //   { quantity: 100, code: 'TG005TG', price: 1000 },
+    //   { quantity: 200, code: 'TG001TG', price: 2000 },
+    //   { quantity: 4000, code: 'TG040TG', price: 4000 },
+    //   { quantity: 19000, code: 'TG001TG', price: 19000 },
+    //   { quantity: 20800, code: 'TG001TG', price: 208000 },
+    // ],
+    // siUnit: 'ml',
   },
   {
     name: 'Grease',
 
-    quantities: [
-      { quantity: 400, code: 'TG005TB', price: 400 },
-      { quantity: 1000, code: 'TG001TB', price: 1000 },
-      { quantity: 4000, code: 'TG040TB', price: 4000 },
-      { quantity: 16000, code: 'TG001TB', price: 16000 },
-      { quantity: 19000, code: 'TG001TB', price: 19000 },
-    ],
-    siUnit: 'gm',
+    // quantities: [
+    //   { quantity: 400, code: 'TG005TB', price: 400 },
+    //   { quantity: 1000, code: 'TG001TB', price: 1000 },
+    //   { quantity: 4000, code: 'TG040TB', price: 4000 },
+    //   { quantity: 16000, code: 'TG001TB', price: 16000 },
+    //   { quantity: 19000, code: 'TG001TB', price: 19000 },
+    // ],
+    // siUnit: 'gm',
   },
   {
     name: 'Machine Tester',
 
-    quantity: [],
-    siUnit: 'kg',
+    // quantity: [],
+    // siUnit: 'kg',
 
-    price: 2500,
+    // price: 2500,
   },
 ];
 

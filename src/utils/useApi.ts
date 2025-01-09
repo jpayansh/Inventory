@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const ApiFunction = async ({ method = 'get', dataParems = null, endPoint }) => {
+const ApiFunction = async ({ method = 'get', body = null, url }) => {
   try {
     var response = await axios({
       method,
-      url: endPoint,
-      ...(method == 'post' ? { data: dataParems } : { dataParems }),
+      url: url,
+      ...(method == 'post' ? { data: body } : { body }),
     });
     return response.data;
   } catch (error) {

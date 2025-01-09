@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CardMenu from 'components/card/CardMenu';
 import Checkbox from 'components/checkbox';
 import Card from 'components/card';
@@ -14,36 +14,40 @@ import {
 import { MdEditSquare, MdDownload } from 'react-icons/md';
 import NavLink from 'components/link/NavLink';
 
-type RowObj = {
-//   name: [string];
-  id: string;
-  quantity: number;
+type qyt = {
+  code: string;
   price: number;
+  quantity: number;
+};
+
+type RowObj = {
+  name: String;
+  quantities: qyt;
+  siUnit: number;
 };
 
 function ProductTable(props: { tableData: any; name: string; page: string }) {
   const { tableData, name, page } = props;
+  console.log(tableData, 'llklk');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    // columnHelper.accessor('name', {
-    //   id: 'name',
-    //   header: () => (
-    //     <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
-    //   ),
-    //   cell: (info: any) => (
-    //     <div className="flex items-center">
-    //       <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-    //         {info.getValue()[0]}
-    //       </p>
-    //     </div>
-    //   ),
-    // }),
-    columnHelper.accessor('id', {
-      id: 'id',
+    columnHelper.accessor('name', {
+      id: 'name',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">name</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('siUnit', {
+      id: 'siUnit',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Product Id
+         Price
         </p>
       ),
       cell: (info) => (
@@ -52,49 +56,17 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
-    columnHelper.accessor('quantity', {
-      id: 'quantity',
+    columnHelper.accessor('siUnit', {
+      id: 'siUnit',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          QUANTITY
+         Price
         </p>
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
           {info.getValue()}
         </p>
-      ),
-    }),
-    columnHelper.accessor('price', {
-      id: 'price',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">Price</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-
-    columnHelper.accessor('id', {
-      id: 'btn-edit',
-      header: () => <p className=""></p>,
-
-      cell: (info) => (
-        <div className="flex items-center">
-          <NavLink href={`${page}/edit/${123456}`}>
-            <button className="p-1">
-              <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
-            </button>
-          </NavLink>
-
-          {/* <NavLink href="generate-invoice">
-            <button className="p-1">
-              <MdDownload className="m-2 text-green-500 dark:text-green-300" />
-            </button>
-          </NavLink> */}
-        </div>
       ),
     }),
   ]; // eslint-disable-next-line
@@ -110,6 +82,13 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
+
+  useEffect(() => {
+    if (tableData) {
+      setData(tableData);
+    }
+  }, [tableData]);
+
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
       <header className="relative flex items-center justify-between pt-4">
@@ -120,7 +99,7 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
         {/* <CardMenu /> */}
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="mt-8 overflow-x-scroll">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -154,6 +133,7 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
               .getRowModel()
               .rows.slice(0, 5)
               .map((row) => {
+                console.log('data in cell', row);
                 return (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {

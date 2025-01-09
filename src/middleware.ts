@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/inventory/default', request.url));
   }
   if (!token && !isLogin) {
-    return NextResponse.redirect(new URL('/inventory/login', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 }
 

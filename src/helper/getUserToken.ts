@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'
 
 export const getUserTokenDetails = (request: NextRequest) => {
   try {

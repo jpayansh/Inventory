@@ -5,8 +5,10 @@ import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
 import { useState } from 'react';
 import ApiFunction from 'utils/useApi';
+import { useRouter } from 'next/navigation';
 
 function SignInDefault() {
+  const router=useRouter();
   const [signin, setSingin] = useState({
     name: '',
     password: '',
@@ -20,7 +22,12 @@ function SignInDefault() {
     }
     try {
       const response=await ApiFunction({method :'post',dataParems:signin,url:"/api/login"});
-      console.log(response,"res in login api")
+      setSingin({
+        name: '',
+        password: '',
+      })
+      router.push("/inventory/default")
+      
 
     } catch (error) {
       console.log("Error in signInFunction api",error)

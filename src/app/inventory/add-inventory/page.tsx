@@ -11,7 +11,7 @@ import Card from 'components/card';
 
 function SignInDefault() {
   const fetchData = async () => {
-    const data = await ApiFunction({ endPoint: 'https://dummyjson.com/test' });
+    const data = await ApiFunction({ url: 'https://dummyjson.com/test' });
     console.log(data, 'api custtom hook');
   };
 

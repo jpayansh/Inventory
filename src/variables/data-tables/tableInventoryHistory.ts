@@ -1,5 +1,5 @@
 type RowObj = {
-  buyer: string;
+  buyerAddress: string;
   address: string;
   gstn: string;
   invoicenumber: string;
@@ -12,79 +12,22 @@ type RowObj = {
   units: number;
   Totalamount: number;
 };
-
-const tableInventoryHistory: RowObj[] = [
+const tableProduct: RowObj[] = [
   {
-    buyer: 'AIC Logistic Company',
-    address: 'B-23/90, Modi cor Tower , Bhilwara',
-    gstn: '83908JK98098BH',
-    invoicenumber: 'TGTB/23-24/62',
-    invoicedate: '23-10-2024',
-    batchnumber: 'TB001TB',
-    statecode: 80,
-    Productname: 'TirrentGlobal',
-    price: 2000,
+    buyerAddress: 'ACI Logistic Company',
+    address: 'Bhilwara',
+    gstn: 'JHBJKB099809HJK',
+    invoicenumber: 'TG/01/445',
+    invoicedate: '02-03-2024',
+    batchnumber: 'TB0900',
+    statecode: 08,
+    Productname: 'TG001TB',
+    price: 1200,
     quantity: [250, 'ml'],
-    units: 455,
-    Totalamount: 50000,
-  },
-  {
-    buyer: 'AIC Logistic Company',
-    address: 'B-23/90, Modi cor Tower , Bhilwara',
-    gstn: '83908JK98098BH',
-    invoicenumber: 'TGTB/23-24/62',
-    invoicedate: '23-10-2024',
-    batchnumber: 'TB001TB',
-    statecode: 80,
-    Productname: 'TirrentGlobal',
-    price: 2000,
-    quantity: [250, 'ml'],
-    units: 455,
-    Totalamount: 50000,
-  },
-  {
-    buyer: 'AIC Logistic Company',
-    address: 'B-23/90, Modi cor Tower , Bhilwara',
-    gstn: '83908JK98098BH',
-    invoicenumber: 'TGTB/23-24/62',
-    invoicedate: '23-10-2024',
-    batchnumber: 'TB001TB',
-    statecode: 80,
-    Productname: 'TirrentGlobal',
-    price: 2000,
-    quantity: [250, 'ml'],
-    units: 455,
-    Totalamount: 50000,
-  },
-  {
-    buyer: 'AIC Logistic Company',
-    address: 'B-23/90, Modi cor Tower , Bhilwara',
-    gstn: '83908JK98098BH',
-    invoicenumber: 'TGTB/23-24/62',
-    invoicedate: '23-10-2024',
-    batchnumber: 'TB001TB',
-    statecode: 80,
-    Productname: 'TirrentGlobal',
-    price: 2000,
-    quantity: [250, 'ml'],
-    units: 455,
-    Totalamount: 50000,
-  },
-  {
-    buyer: 'AIC Logistic Company',
-    address: 'B-23/90, Modi cor Tower , Bhilwara',
-    gstn: '83908JK98098BH',
-    invoicenumber: 'TGTB/23-24/62',
-    invoicedate: '23-10-2024',
-    batchnumber: 'TB001TB',
-    statecode: 80,
-    Productname: 'TirrentGlobal',
-    price: 2000,
-    quantity: [250, 'ml'],
-    units: 455,
-    Totalamount: 50000,
+    units: 3,
+    Totalamount: 3600,
   },
 ];
 
+const tableInventoryHistory: RowObj[] = [];
 export default tableInventoryHistory;
-
