@@ -1,4 +1,4 @@
-import queryDb, { users } from 'dbConfig/dbConfig';
+import queryDb from 'dbConfig/dbConfig';
 import { getJsonWebToken } from 'helper/getUserToken';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    const userData = await queryDb('SELECT * FROM users WHERE username = $1', [
+    const userData = await queryDb('SELECT * FROM users WHERE user_name = $1', [
       name,
     ]);
     if (!userData) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     const token = getJsonWebToken(request);
 
-    await queryDb('UPDATE users SET token = $1 WHERE username = $1', [
+    await queryDb('UPDATE users SET token = $1 WHERE user_name = $1', [
       token,
       name,
     ]);

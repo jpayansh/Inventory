@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     }
 
     const ordersData = await queryDb(
-      'SELECT * FROM order_products INNER JOIN order ON order_products.order_id = order.id INNER JOIN product ON order_products.product_id = product.id',
+      'SELECT * FROM order_products INNER JOIN orders ON order_products.order_id = orders.id INNER JOIN products ON order_products.product_id = products.id INNER JOIN companies ON orders.company_id = companies.id',
     );
 
     if (!ordersData) {

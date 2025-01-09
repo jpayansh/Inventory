@@ -1,14 +1,8 @@
-import queryDb, { products } from 'dbConfig/dbConfig';
-import { getUserTokenDetails } from 'helper/getUserToken';
+import queryDb from 'dbConfig/dbConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await getUserTokenDetails(request);
-
-    if (!userId) {
-      return NextResponse.json({ message: 'Invalid Token' }, { status: 400 });
-    }
     const productsData = await queryDb('SELECT * FROM products');
 
     if (!productsData) {
@@ -28,26 +22,18 @@ export async function GET(request: NextRequest) {
 }
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getUserTokenDetails(request);
-    const { name, quantity, units, code, batchNumber } = await request.json();
+    const { product_name, sku_id } = await request.json();
 
-    if (!userId) {
-      return NextResponse.json({ message: 'Invalid Token' }, { status: 400 });
-    }
-    if (
-      [name, quantity, units, code, batchNumber].some(
-        (item) => item.trim() === '',
-      )
-    ) {
+    if ([product_name, sku_id].some((item) => item.trim() === '')) {
       return NextResponse.json(
-        { message: 'Empty name, quantity, units,code,batchNumber or all' },
+        { message: 'Empty product_name, sku_id or all' },
         { status: 400 },
       );
     }
 
     const insertProductsData = await queryDb(
-      'INSERT INTO products (product_name, quantity, units,code,batch_number,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
-      [name, quantity, units, code, batchNumber, Date.now(), Date.now()],
+      'INSERT INTO products (product_name, sku_id,created_at,updated_at) VALUES ($1,$2,$3,$4) RETURNING id',
+      [product_name, sku_id, Date.now(), Date.now()],
     );
 
     if (!insertProductsData) {
@@ -67,12 +53,8 @@ export async function POST(request: NextRequest) {
 }
 export async function DELETE(request: NextRequest) {
   try {
-    const userId = await getUserTokenDetails(request);
     const productID = await request.json();
 
-    if (!userId) {
-      return NextResponse.json({ message: 'Invalid Token' }, { status: 400 });
-    }
     if (!productID) {
       return NextResponse.json({ message: 'Fill ProductID' }, { status: 400 });
     }
@@ -102,29 +84,19 @@ export async function DELETE(request: NextRequest) {
 }
 export async function PUT(request: NextRequest) {
   try {
-    const userId = await getUserTokenDetails(request);
-    const { name, quantity, units, code, batchNumber, productID } =
-      await request.json();
-    if (
-      [name, quantity, units, code, batchNumber, productID].some(
-        (item) => item.trim() === '',
-      )
-    ) {
+    const { product_name, sku_id, productID } = await request.json();
+    if ([product_name, sku_id].some((item) => item.trim() === '')) {
       return NextResponse.json(
         {
-          message:
-            'Empty name, quantity, units, code, batchNumber, productId or all',
+          message: 'Empty product_name, sku_id or all',
         },
         { status: 400 },
       );
     }
 
-    if (!userId) {
-      return NextResponse.json({ message: 'Invalid Token' }, { status: 400 });
-    }
     const productUpdatedData = await queryDb(
-      'UPDATE products SET product_name = $1, quantity = $2, units = $3 code = $4 batch_number = $5 updated_at = $6 WHERE id = $7;',
-      [name, quantity, units, code, batchNumber, Date.now(), productID],
+      'UPDATE products SET product_name = $1, sku_id = $2, updated_at = $3 WHERE id = $4;',
+      [product_name, sku_id, Date.now(), productID],
     );
 
     if (!productUpdatedData) {
