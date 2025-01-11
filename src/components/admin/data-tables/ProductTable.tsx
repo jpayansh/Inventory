@@ -21,7 +21,8 @@ type qyt = {
 };
 
 type RowObj = {
-  name: String;
+  id:string
+  name: string;
   quantities: qyt;
   siUnit: number;
 };
@@ -67,6 +68,22 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
         <p className="text-sm font-bold text-navy-700 dark:text-white">
           {info.getValue()}
         </p>
+      ),
+    }),
+     columnHelper.accessor('id', {
+      id: 'btn-edit',
+      header: () => <p className=""></p>,
+
+      cell: (info) => (
+        <div className="flex items-center">
+          <NavLink href={`${page}/edit/${info.getValue()}`}>
+            <button className="p-1">
+              <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
+            </button>
+          </NavLink>
+
+          
+        </div>
       ),
     }),
   ]; // eslint-disable-next-line
