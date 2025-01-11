@@ -11,42 +11,38 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { MdEditSquare, MdDownload } from 'react-icons/md';
+import NavLink from 'components/link/NavLink';
 
 type RowObj = {
-  name: [string, boolean];
-  progress: string;
-  quantity: number;
-  date: string;
+  id: string;
+  quantity: [number, string];
+  units: number;
 };
 
-function CheckTable(props: { tableData: any }) {
-  const { tableData } = props;
+function InventoryTable(props: { tableData: any; name: string; page: string }) {
+  const { tableData, name, page } = props;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor('name', {
-      id: 'name',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">QUANTITY</p>
-      ),
-      cell: (info: any) => (
-        <div className="flex items-center">
-          <Checkbox
-            defaultChecked={info.getValue()[1]}
-            colorScheme="brandScheme"
-            me="10px"
-          />
-          <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()[0]}
-          </p>
-        </div>
-      ),
-    }),
-    columnHelper.accessor('progress', {
-      id: 'progress',
+    // columnHelper.accessor('name', {
+    //   id: 'name',
+    //   header: () => (
+    //     <p className="text-sm font-bold text-gray-600 dark:text-white">NAME</p>
+    //   ),
+    //   cell: (info: any) => (
+    //     <div className="flex items-center">
+    //       <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
+    //         {info.getValue()[0]}
+    //       </p>
+    //     </div>
+    //   ),
+    // }),
+    columnHelper.accessor('id', {
+      id: 'id',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          ITEMS
+          Product Id
         </p>
       ),
       cell: (info) => (
@@ -68,10 +64,10 @@ function CheckTable(props: { tableData: any }) {
         </p>
       ),
     }),
-    columnHelper.accessor('date', {
-      id: 'date',
+    columnHelper.accessor('units', {
+      id: 'price',
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">Units</p>
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
@@ -79,7 +75,28 @@ function CheckTable(props: { tableData: any }) {
         </p>
       ),
     }),
-  ]; 
+
+    // columnHelper.accessor('id', {
+    //   id: 'btn-edit',
+    //   header: () => <p className=""></p>,
+
+    //   cell: (info) => (
+    //     <div className="flex items-center">
+    //       <NavLink href={`${page}/edit/${123456}`}>
+    //         <button className="p-1">
+    //           <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
+    //         </button>
+    //       </NavLink>
+
+    //       <NavLink href="generate-invoice">
+    //         <button className="p-1">
+    //           <MdDownload className="m-2 text-green-500 dark:text-green-300" />
+    //         </button>
+    //       </NavLink>
+    //     </div>
+    //   ),
+    // }),
+  ]; // eslint-disable-next-line
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
     data,
@@ -96,9 +113,10 @@ function CheckTable(props: { tableData: any }) {
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Tirrent Global
+          {name}
         </div>
-        <CardMenu />
+
+        {/* <CardMenu /> */}
       </header>
 
       <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
@@ -112,7 +130,7 @@ function CheckTable(props: { tableData: any }) {
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-4 pt-4 text-start"
+                      className="cursor-pointer border-b border-gray-200 pb-2 pr-4 pt-4 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -160,5 +178,5 @@ function CheckTable(props: { tableData: any }) {
   );
 }
 
-export default CheckTable;
+export default InventoryTable;
 const columnHelper = createColumnHelper<RowObj>();

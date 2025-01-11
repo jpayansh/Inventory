@@ -5,29 +5,37 @@ import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
 import { useState } from 'react';
 import ApiFunction from 'utils/useApi';
+import { useRouter } from 'next/navigation';
 
 function SignInDefault() {
+  const router = useRouter();
   const [signin, setSingin] = useState({
     name: '',
     password: '',
   });
   const onSignChange = (e) => {
-    setSingin((prv)=>({...prv,[e.target.id]:e.target.value}))
+    setSingin((prv) => ({ ...prv, [e.target.id]: e.target.value }));
   };
-  const signInFunction=async()=>{
-    if(!signin.name||!signin.password){
-     return;
+  const signInFunction = async () => {
+    if (!signin.name || !signin.password) {
+      return;
     }
     try {
-      const response=await ApiFunction({method :'post',dataParems:signin,url:"/api/login"});
-      console.log(response,"res in login api")
-
+      const response = await ApiFunction({
+        method: 'post',
+        body: signin,
+        url: '/api/login',
+      });
+      setSingin({
+        name: '',
+        password: '',
+      });
+      router.push('/inventory/default');
     } catch (error) {
-      console.log("Error in signInFunction api",error)
+      console.log('Error in signInFunction api', error);
     }
+  };
 
-  }
-  
   return (
     <Default
       maincard={
@@ -63,8 +71,6 @@ function SignInDefault() {
               type="text"
               value={signin.name}
               onChange={onSignChange}
-
-              
             />
 
             {/* Password */}
@@ -77,11 +83,13 @@ function SignInDefault() {
               type="password"
               value={signin.password}
               onChange={onSignChange}
-              
             />
             {/* Checkbox */}
-           
-            <button onClick={signInFunction} className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
+
+            <button
+              onClick={signInFunction}
+              className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
+            >
               Sign In
             </button>
             {/* <div className="mt-4">

@@ -20,19 +20,17 @@ const routes = [
     path: 'default',
     icon: <MdHome className="h-6 w-6" />,
   },
-  // {
-  //   name: 'NFT Marketplace',
-  //   layout: '/admin',
-  //   path: 'nft-marketplace',
-  //   icon: <MdOutlineShoppingCart className="h-6 w-6" />,
-
-  //   secondary: true,
-  // },
+  {
+    name: 'Products',
+    layout: '/inventory',
+    path: 'products',
+    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+  },
   {
     name: 'Inventory',
     layout: '/inventory',
     icon: <MdBarChart className="h-6 w-6" />,
-    path: 'data-tables',
+    path: 'inventory',
   },
 
   {
@@ -40,6 +38,12 @@ const routes = [
     layout: '/inventory',
     icon: <MdFileCopy className="h-6 w-6" />,
     path: 'generate-invoice',
+  },
+  {
+    name: 'Invoice History',
+    layout: '/inventory',
+    icon: <MdFileCopy className="h-6 w-6" />,
+    path: 'history',
   },
   // {
   //   name: 'Profile',

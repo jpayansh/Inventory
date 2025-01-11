@@ -14,6 +14,7 @@ import {
 } from 'react-icons/io';
 import avatar from '/public/img/avatars/avatar4.png';
 import Image from 'next/image';
+import { MdBarChart, MdDashboard, MdLibraryAdd } from 'react-icons/md';
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -55,7 +56,32 @@ const Navbar = (props: {
           </NavLink>
         </p>
       </div>
-
+      <div className="mt-5 flex gap-2">
+        <NavLink key="add-inventoryyyy" href="add-inventory">
+          <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
+            <span className="text-brand-500 dark:text-white">
+              <MdLibraryAdd />
+            </span>
+            <span className="text-md font-bold ">Add Inventory</span>
+          </button>
+        </NavLink>
+        <NavLink key="create-new-orderrr" href="create-order">
+          <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
+            <span className="text-brand-500 dark:text-white">
+              <MdLibraryAdd />
+            </span>
+            <span className="text-md font-bold ">Create New Order</span>
+          </button>
+        </NavLink>
+        <NavLink key="add-product" href="products /add">
+          <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
+            <span className="text-brand-500 dark:text-white">
+              <MdLibraryAdd />
+            </span>
+            <span className="text-md font-bold ">Add Product</span>
+          </button>
+        </NavLink>
+      </div>
       <div className="relative mt-[3px] flex h-[61px] w-[355px] flex-grow items-center justify-around gap-2 rounded-full bg-white px-2 py-2 shadow-xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none md:w-[365px] md:flex-grow-0 md:gap-1 xl:w-[365px] xl:gap-2">
         <div className="flex h-full items-center rounded-full bg-lightPrimary text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
           <p className="pl-3 pr-2 text-xl">

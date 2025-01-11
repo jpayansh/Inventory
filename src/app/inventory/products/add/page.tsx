@@ -8,7 +8,7 @@ import ApiFunction from 'utils/useApi';
 import { useEffect, useState } from 'react';
 import { MdAddCircleOutline, MdDelete } from 'react-icons/md';
 // let ProductId = 1;
-export default function SignInDefault() {
+export default function SignInDefault({parem}) {
   const [newdata, setNewdDate] = useState({
     product_name: '',
     sku_id: '',

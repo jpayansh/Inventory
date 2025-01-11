@@ -9,7 +9,7 @@ type RowObj = {
 const tableDataCheck: RowObj[] = [
   {
     name: ['Horizon UI PRO', true],
-    quantity: 2458,
+    quantity: 28,
     progress: '17.5%',
     date: '12 Jan 2021',
     info: false,

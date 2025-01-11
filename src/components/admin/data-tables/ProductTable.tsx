@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CardMenu from 'components/card/CardMenu';
 import Checkbox from 'components/checkbox';
 import Card from 'components/card';
@@ -11,75 +11,82 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { MdEditSquare, MdDownload } from 'react-icons/md';
+import NavLink from 'components/link/NavLink';
 
-type RowObj = {
-  name: [string, boolean];
-  progress: string;
+type qyt = {
+  code: string;
+  price: number;
   quantity: number;
-  date: string;
 };
 
-function CheckTable(props: { tableData: any }) {
-  const { tableData } = props;
+type RowObj = {
+  id:string
+  name: string;
+  quantities: qyt;
+  siUnit: number;
+};
+
+function ProductTable(props: { tableData: any; name: string; page: string }) {
+  const { tableData, name, page } = props;
+  console.log(tableData, 'llklk');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
     columnHelper.accessor('name', {
       id: 'name',
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">QUANTITY</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">name</p>
       ),
-      cell: (info: any) => (
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('siUnit', {
+      id: 'siUnit',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+         Price
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('siUnit', {
+      id: 'siUnit',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+         Price
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+     columnHelper.accessor('id', {
+      id: 'btn-edit',
+      header: () => <p className=""></p>,
+
+      cell: (info) => (
         <div className="flex items-center">
-          <Checkbox
-            defaultChecked={info.getValue()[1]}
-            colorScheme="brandScheme"
-            me="10px"
-          />
-          <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
-            {info.getValue()[0]}
-          </p>
+          <NavLink href={`${page}/edit/${info.getValue()}`}>
+            <button className="p-1">
+              <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
+            </button>
+          </NavLink>
+
+          
         </div>
       ),
     }),
-    columnHelper.accessor('progress', {
-      id: 'progress',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          ITEMS
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('quantity', {
-      id: 'quantity',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          QUANTITY
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('date', {
-      id: 'date',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">DATE</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-  ]; 
+  ]; // eslint-disable-next-line
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
     data,
@@ -92,16 +99,24 @@ function CheckTable(props: { tableData: any }) {
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
+
+  useEffect(() => {
+    if (tableData) {
+      setData(tableData);
+    }
+  }, [tableData]);
+
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Tirrent Global
+          {name}
         </div>
-        <CardMenu />
+
+        {/* <CardMenu /> */}
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="mt-8 overflow-x-scroll">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -112,7 +127,7 @@ function CheckTable(props: { tableData: any }) {
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b-[1px] border-gray-200 pb-2 pr-4 pt-4 text-start"
+                      className="cursor-pointer border-b border-gray-200 pb-2 pr-4 pt-4 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -135,6 +150,7 @@ function CheckTable(props: { tableData: any }) {
               .getRowModel()
               .rows.slice(0, 5)
               .map((row) => {
+                console.log('data in cell', row);
                 return (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {
@@ -160,5 +176,5 @@ function CheckTable(props: { tableData: any }) {
   );
 }
 
-export default CheckTable;
+export default ProductTable;
 const columnHelper = createColumnHelper<RowObj>();
