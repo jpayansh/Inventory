@@ -1,4 +1,4 @@
-import { users } from 'dbConfig/dbConfig';
+import queryDb from 'dbConfig/dbConfig';
 import { getJsonWebToken } from 'helper/getUserToken';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -11,11 +11,13 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    const user = users.filter((data) => data.name == name);
-    if (!user) {
+    const userData = await queryDb('SELECT * FROM users WHERE user_name = $1', [
+      name,
+    ]);
+    if (!userData) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
-    // if (user.password !== password) {
+    // if (userData.user_password !== password) {
     //   return NextResponse.json(
     //     { message: 'Please provide valid details' },
     //     { status: 404 },
@@ -23,6 +25,11 @@ export async function POST(request: NextRequest) {
     // }
 
     const token = getJsonWebToken(request);
+
+    await queryDb('UPDATE users SET token = $1 WHERE user_name = $1', [
+      token,
+      name,
+    ]);
 
     const response = NextResponse.json(
       { message: 'Successfully Logged In', data: 'user' },
