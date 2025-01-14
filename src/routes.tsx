@@ -23,7 +23,7 @@ const routes = [
   {
     name: 'Products',
     layout: '/inventory',
-    path: 'products',
+    path: 'products/add',
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
   },
   {

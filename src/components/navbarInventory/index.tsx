@@ -73,7 +73,7 @@ const Navbar = (props: {
             <span className="text-md font-bold ">Create New Order</span>
           </button>
         </NavLink>
-        <NavLink key="add-product" href="products /add">
+        <NavLink key="add-product" href="products/add">
           <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
             <span className="text-brand-500 dark:text-white">
               <MdLibraryAdd />
