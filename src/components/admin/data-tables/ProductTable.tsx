@@ -21,10 +21,9 @@ type qyt = {
 };
 
 type RowObj = {
-  id:string
-  name: string;
-  quantities: qyt;
-  siUnit: number;
+  _id: string;
+  product_name: string;
+  sku_id: string;
 };
 
 function ProductTable(props: { tableData: any; name: string; page: string }) {
@@ -33,22 +32,11 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor('name', {
-      id: 'name',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">name</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('siUnit', {
-      id: 'siUnit',
+    columnHelper.accessor('product_name', {
+      id: 'product_name',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-         Price
+          Product Name
         </p>
       ),
       cell: (info) => (
@@ -57,11 +45,11 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
-    columnHelper.accessor('siUnit', {
-      id: 'siUnit',
+    columnHelper.accessor('sku_id', {
+      id: 'sku_id',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-         Price
+          Product ID
         </p>
       ),
       cell: (info) => (
@@ -70,8 +58,9 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
-     columnHelper.accessor('id', {
-      id: 'btn-edit',
+
+    columnHelper.accessor('_id', {
+      id: '_id',
       header: () => <p className=""></p>,
 
       cell: (info) => (
@@ -81,8 +70,6 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
               <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
             </button>
           </NavLink>
-
-          
         </div>
       ),
     }),
