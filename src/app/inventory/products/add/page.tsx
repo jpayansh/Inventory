@@ -2,18 +2,18 @@
 import InputField from 'components/fields/InputField';
 
 import Checkbox from 'components/checkbox';
-import tableDataCheck from 'variables/data-tables/tableDataCheck';
-import CheckTable from 'components/admin/data-tables/CheckTable';
+
 import ApiFunction from 'utils/useApi';
 import { useEffect, useState } from 'react';
-import { MdAddCircleOutline, MdDelete } from 'react-icons/md';
+
 import ProductTable from 'components/admin/data-tables/ProductTable';
-// let ProductId = 1;
+
 export default function SignInDefault() {
   const [newdata, setNewdDate] = useState({
     product_name: '',
     sku_id: '',
   });
+  const [load, setLoad] = useState(false);
 
   const [data, setData] = useState([]);
   const addProduct = (e) => {
@@ -22,34 +22,40 @@ export default function SignInDefault() {
 
   const addProductFunction = async () => {
     try {
+      if (!newdata.product_name || !newdata.sku_id) {
+        throw Error('Fill all the details');
+      }
       const response = await ApiFunction({
         method: 'post',
-        url: '/api/products',
+        url: 'products',
         body: { ...newdata },
       });
+      if (response.success) {
+        setLoad((prv) => !prv);
+      }
+    } catch (error) {
+      console.log('error in addProductFunction in front -->', error);
+    } finally {
       setNewdDate({
         product_name: '',
         sku_id: '',
       });
-    } catch (error) {
-      ('error');
     }
   };
 
-  // Fetch data from API
   const fetchTableData = async () => {
     try {
-      const response = await ApiFunction({ url: '/api/products' }); // Replace with actual endpoint
-      setData(response?.data || []); // Assuming response.data contains your array of products
+      const response = await ApiFunction({ url: 'products' });
+      setData(response?.data || []);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
   };
 
+  console.log(data, 'dataaa');
   useEffect(() => {
     fetchTableData();
-  }, []);
-  console.log(newdata, 'knk');
+  }, [load]);
 
   return (
     <>
@@ -65,14 +71,8 @@ export default function SignInDefault() {
          px-2"
           >
             <div className="mt-2 flex items-center">
-              <button
-                className="col-span-1 ml-2 text-sm font-medium text-navy-700 dark:text-white"
-                // onClick={() => editProducts('add')}
-              >
-                <MdAddCircleOutline style={{ color: 'green' }} />
-              </button>
               <p className="text-md ml-2 font-medium text-navy-700 dark:text-white">
-                Products
+                Add Product
               </p>
             </div>
             <div className="mb-3 grid grid-cols-12 gap-2 px-2">
@@ -83,7 +83,7 @@ export default function SignInDefault() {
                   variant="auth"
                   extra="col-span-6"
                   label="Product Name*"
-                  placeholder="Tirrent Global"
+                  placeholder="Tirrent Booster"
                   id="product_name"
                   type="text"
                   value={newdata.product_name}
@@ -92,8 +92,8 @@ export default function SignInDefault() {
                 <InputField
                   variant="auth"
                   extra="col-span-5"
-                  label="Quantity*"
-                  placeholder="50 ml"
+                  label="Product ID*"
+                  placeholder="TG001TB"
                   id="sku_id"
                   type="text"
                   value={newdata.sku_id}
@@ -118,13 +118,13 @@ export default function SignInDefault() {
             onClick={addProductFunction}
             className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
           >
-            Create order
+            Create Product
           </button>
         </div>
       </div>
       <div className="mt-5 grid h-full grid-cols-1 gap-5 ">
         <ProductTable
-          tableData={data} 
+          tableData={data}
           name="Products History"
           page="products"
         />

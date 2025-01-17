@@ -1,7 +1,7 @@
 'use client';
 import tableDataDevelopment from 'variables/data-tables/tableDataDevelopment';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
-import CheckTable from 'components/admin/data-tables/CheckTable';
+import CheckTable from 'components/admin/data-tables/InventoryHistoryTable';
 import tableDataColumns from 'variables/data-tables/tableDataColumns';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 import DevelopmentTable from 'components/admin/data-tables/DevelopmentTable';

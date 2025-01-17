@@ -1,15 +1,15 @@
 'use client';
 import tableInventory from 'variables/data-tables/tableInventory';
-import CheckTable from 'components/admin/data-tables/CheckTable';
+import CheckTable from 'components/admin/data-tables/InventoryHistoryTable';
 import ApiFunction from 'utils/useApi';
 import InventoryTable from 'components/admin/data-tables/InventoryTable';
 import { useEffect, useState } from 'react';
 
-const Tables = async () => {
+const Tables = () => {
   const [data, setData] = useState([]);
   const tableDataFunction = async () => {
     try {
-      const response = await ApiFunction({ url: '/api/inventory' });
+      const response = await ApiFunction({ url: 'inventory' });
       console.log(response, 'product Data');
       setData(response.data);
       console.log(response, 'res');

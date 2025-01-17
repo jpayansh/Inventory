@@ -1,41 +1,64 @@
 'use client';
 import InputField from 'components/fields/InputField';
-import Default from 'components/auth/variants/DefaultAuthLayout';
-import { FcGoogle } from 'react-icons/fc';
-import Checkbox from 'components/checkbox';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
-import CheckTable from 'components/admin/data-tables/CheckTable';
+import CheckTable from 'components/admin/data-tables/InventoryHistoryTable';
 import ApiFunction from 'utils/useApi';
 import { useEffect, useState } from 'react';
 import Card from 'components/card';
 
 function SignInDefault() {
   const [newdata, setNewdDate] = useState({
-    product_name: '',
+    batch_number: '',
+    price_per_bottle: '',
+    total_quantity: '',
     sku_id: '',
+    price_total: '',
   });
+  const [tableData, setTableData] = useState([]);
   const addInventory = (e) => {
     setNewdDate((prv) => ({ ...prv, [e.target.id]: e.target.value }));
   };
+  const [load, setLoad] = useState(false);
 
-  const addProductFunction = async () => {
+  const addInventoryFunction = async () => {
     try {
       const response = await ApiFunction({
         method: 'post',
-        url: '/api/inventory',
+        url: 'inventory',
         body: { ...newdata },
       });
-      console.log(response, 'knk');
+      if (!response.success) {
+        throw Error(response.message);
+      }
+      setLoad((prv) => !prv);
     } catch (error) {
-      ('error');
+      console.log('error in addInventoryFunction --> ', error.message);
+    } finally {
+      setNewdDate({
+        batch_number: '',
+        price_per_bottle: '',
+        total_quantity: '',
+        sku_id: '',
+        price_total: '',
+      });
+    }
+  };
+  const getInventoryData = async () => {
+    try {
+      const response = await ApiFunction({ url: 'inventory' });
+      if (!response.success) {
+        throw Error(response.message);
+      }
+      setTableData(response?.data || []);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
     }
   };
 
-  
-
   useEffect(() => {
-    addProductFunction();
-  }, []);
+    getInventoryData();
+  }, [load]);
+
   return (
     <>
       <Card mt-5>
@@ -49,44 +72,63 @@ function SignInDefault() {
               <InputField
                 variant="auth"
                 extra="col-span-6"
-                label="Product Name*"
-                placeholder="Product Name"
-                id="email"
+                label="Product ID*"
+                placeholder="TG001TB"
+                id="sku_id"
                 type="text"
-                value={newdata.product_name}
+                value={newdata.sku_id}
                 onChange={addInventory}
               />
               <InputField
                 variant="auth"
                 extra="col-span-6"
-                label="Quantity*"
-                placeholder="Quantity"
-                id="email"
-                type="text"
+                label="Total Quantity*"
+                placeholder="8"
+                id="total_quantity"
+                onChange={addInventory}
+                value={newdata.total_quantity}
+                type="number"
               />
 
               <InputField
                 variant="auth"
                 extra="col-span-6"
-                label="Batch Number"
-                placeholder=""
-                id="Batch Number"
+                label="Batch Number*"
+                placeholder="31"
+                id="batch_number"
+                value={newdata.batch_number}
+                onChange={addInventory}
                 type="text"
               />
               <InputField
                 variant="auth"
                 extra="col-span-6"
-                label="Price"
-                placeholder=""
-                id="Price"
-                type="text"
+                label="Price/Bottle* in Rs"
+                placeholder="3000"
+                id="price_per_bottle"
+                value={newdata.price_per_bottle}
+                onChange={addInventory}
+                type="number"
+              />
+              <InputField
+                variant="auth"
+                extra="col-span-6"
+                label="Price* in Rs"
+                placeholder="300000"
+                id="price_total"
+                value={newdata.price_total}
+                onChange={addInventory}
+                type="number"
               />
             </div>
             {/* Password */}
 
             {/* Checkbox */}
 
-            <button className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
+            <button
+              onClick={addInventoryFunction}
+              className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
+            >
               Add inventory
             </button>
           </div>
@@ -94,7 +136,7 @@ function SignInDefault() {
       </Card>
       <div className="mt-5 grid h-full grid-cols-1 gap-5">
         <CheckTable
-          tableData={tableDataCheck}
+          tableData={tableData}
           name="Inventory History"
           page="add-inventory"
         />

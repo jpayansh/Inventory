@@ -2,22 +2,31 @@ import queryDb from 'dbConfig/dbConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const id = searchParams.get('id');
+  let query = '';
+  console.log(id);
   try {
-    const productsData = await queryDb('SELECT * FROM products');
+    if (id) {
+      query = `SELECT * FROM products WHERE id = ${id}`;
+    } else {
+      query = `SELECT * FROM products`;
+    }
+    const productsData = await queryDb(query);
 
     if (!productsData) {
       return NextResponse.json(
-        { message: 'No products were found', data: [] },
+        { message: 'No products were found', data: [], success: false },
         { status: 404 },
       );
     }
 
     return NextResponse.json(
-      { message: 'Success', data: productsData },
+      { message: 'Success', data: productsData, success: true },
       { status: 200 },
     );
   } catch (error) {
-    console.log(error);
+    console.log('Error in products controller --> ', error.message);
   }
 }
 export async function POST(request: NextRequest) {
@@ -26,25 +35,29 @@ export async function POST(request: NextRequest) {
 
     if ([product_name, sku_id].some((item) => item.trim() === '')) {
       return NextResponse.json(
-        { message: 'Empty product_name, sku_id or all' },
+        {
+          message: 'Empty product_name, sku_id or all',
+          success: false,
+          data: [],
+        },
         { status: 400 },
       );
     }
 
     const insertProductsData = await queryDb(
-      'INSERT INTO products (product_name, sku_id,created_at,updated_at) VALUES ($1,$2,$3,$4) RETURNING id',
-      [product_name, sku_id, Date.now(), Date.now()],
+      'INSERT INTO products (product_name, sku_id) VALUES ($1,$2) RETURNING id',
+      [product_name, sku_id.toUpperCase()],
     );
 
     if (!insertProductsData) {
       return NextResponse.json(
-        { message: 'Inserting product failed', data: [] },
-        { status: 404 },
+        { message: 'Inserting product failed', data: [], success: false },
+        { status: 403 },
       );
     }
 
     return NextResponse.json(
-      { message: 'Success', data: insertProductsData },
+      { message: 'Success', data: insertProductsData, success: true },
       { status: 200 },
     );
   } catch (error) {
@@ -56,7 +69,10 @@ export async function DELETE(request: NextRequest) {
     const productID = await request.json();
 
     if (!productID) {
-      return NextResponse.json({ message: 'Fill ProductID' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Fill ProductID', success: false, data: [] },
+        { status: 400 },
+      );
     }
 
     const productDeletedData = await queryDb(
@@ -69,13 +85,14 @@ export async function DELETE(request: NextRequest) {
         {
           message: 'No product deleted happened Or No product found of this ID',
           data: [],
+          success: false,
         },
         { status: 404 },
       );
     }
 
     return NextResponse.json(
-      { message: 'Success', data: productDeletedData },
+      { message: 'Success', data: productDeletedData, success: true },
       { status: 200 },
     );
   } catch (error) {
@@ -84,11 +101,14 @@ export async function DELETE(request: NextRequest) {
 }
 export async function PUT(request: NextRequest) {
   try {
-    const { product_name, sku_id, productID } = await request.json();
-    if ([product_name, sku_id].some((item) => item.trim() === '')) {
+    const { product_name, sku_id, product_id } = await request.json();
+
+    if ([product_name, sku_id, product_id].some((data) => data.trim() == '')) {
       return NextResponse.json(
         {
-          message: 'Empty product_name, sku_id or all',
+          message: 'Empty product_id or sku_id, product_name',
+          success: false,
+          data: [],
         },
         { status: 400 },
       );
@@ -96,20 +116,27 @@ export async function PUT(request: NextRequest) {
 
     const productUpdatedData = await queryDb(
       'UPDATE products SET product_name = $1, sku_id = $2, updated_at = $3 WHERE id = $4;',
-      [product_name, sku_id, Date.now(), productID],
+      [
+        product_name,
+        sku_id.toUpperCase(),
+        new Date(Date.now()).toISOString(),
+        product_id,
+      ],
     );
 
     if (!productUpdatedData) {
       return NextResponse.json(
         {
-          message: 'No product updated happened Or No product found of this ID',
+          message: 'No product created yet Or No product found of this ID',
+          success: false,
+          data: [],
         },
         { status: 404 },
       );
     }
 
     return NextResponse.json(
-      { message: 'Success', data: productUpdatedData },
+      { message: 'Success', data: productUpdatedData, success: true },
       { status: 200 },
     );
   } catch (error) {

@@ -2,146 +2,85 @@
 import InputField from 'components/fields/InputField';
 
 import Checkbox from 'components/checkbox';
-import tableDataCheck from 'variables/data-tables/tableDataCheck';
-import CheckTable from 'components/admin/data-tables/CheckTable';
 import ApiFunction from 'utils/useApi';
 import { useEffect, useState } from 'react';
 import { MdAddCircleOutline, MdDelete } from 'react-icons/md';
-// let ProductId = 1;
-export default function SignInDefault() {
+import { useRouter } from 'next/navigation';
+
+export default function SignInDefault({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const [newdata, setNewdDate] = useState({
     product_name: '',
     sku_id: '',
+    product_id: params.id,
   });
   const addProduct = (e) => {
     setNewdDate((prv) => ({ ...prv, [e.target.id]: e.target.value }));
   };
 
-  const addProductFunction = async () => {
+  const editProductFunction = async () => {
+    const data = {
+      product_name: newdata.product_name,
+      sku_id: newdata.sku_id,
+      product_id: params.id,
+    };
+
     try {
+      if (!data.product_name || !data.sku_id || !data.product_id) {
+        throw Error('Fill all the details');
+      }
       const response = await ApiFunction({
-        method: 'post',
-        url: '/api/products',
-        body: { ...newdata },
+        method: 'put',
+        url: 'products',
+        body: { ...data },
       });
+      console.log(response, 'response');
+
+      if (response.success) {
+        router.push('/inventory/products/add');
+      }
+      throw new Error(response.message);
     } catch (error) {
-      ('error');
+      console.log('error in edit products --> ', error);
     }
   };
-  console.log(newdata, 'knk');
 
-  // const [products, setProducts] = useState([
-  //   {
-  //     product_name: 'ProductId',
-  //     sku_id: '',
-  //   },
-  // ]);
+  const getData = async () => {
+    try {
+      const response = await ApiFunction({
+        method: 'get',
+        url: `products?id=${params.id}`,
+      });
 
-  // const editProducts = (operation, prodId = null) => {
-  //   if (operation == 'delete') {
-  //     setProducts((prv) => {
-  //       return prv.filter((item) => item.sku_id != prodId);
-  //     });
-  //     return;
-  //   }
-  //   setProducts((prv) => [
-  //     ...prv,
-  //     {
-  //       product_name: 'ProductId',
-  //       sku_id: '',
-  //     },
-  //   ]);
-  // };
-
-  // const fetchData = async () => {
-  //   const data = await ApiFunction({ method: 'post', url: '/api/product' });
-  //   console.log(data, 'api custtom hook');
-  // };
+      if (response.data.length > 0) {
+        setNewdDate(response.data[0]);
+      }
+    } catch (error) {
+      console.log('error in get in edit products --> ', error);
+    }
+  };
+  console.log(newdata);
 
   useEffect(() => {
-    addProductFunction();
+    getData();
   }, []);
+
   return (
     <>
       <div className="mt-5 rounded-[20px] bg-white p-5">
         {/* Sign in section */}
         <div className="mt-4 w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 ">
           <h3 className="mb-2.5 text-2xl font-bold text-navy-700 dark:text-white">
-            Add New Product
+            Edit Product
           </h3>
-          {/* <div className="mb-3 grid grid-cols-12 gap-4 px-2">
-            <InputField
-              variant="auth"
-              extra="col-span-6"
-              label="Company Name*"
-              placeholder="Tirrent Global"
-              id="cmpName"
-              type="text"
-            />
-            <InputField
-              variant="auth"
-              extra="col-span-6"
-              label="Buyer Address*"
-              placeholder="Orient Arcade, Bhilwara"
-              id="buyerAddress"
-              type="text"
-            />
 
-            <InputField
-              variant="auth"
-              extra="col-span-6"
-              label="Mobile Number*"
-              placeholder="918306027469"
-              id="phoneNumber"
-              type="number"
-            />
-            <InputField
-              variant="auth"
-              extra="col-span-6"
-              label="Email*"
-              placeholder="mail@simmmple.com"
-              id="email"
-              type="text"
-            />
-
-            <InputField
-              variant="auth"
-              extra="col-span-6"
-              label="GSTIN*"
-              placeholder="22AAAAA0000A1Z5"
-              id="gstNumber"
-              type="email"
-            />
-            <InputField
-              variant="auth"
-              extra="col-span-6"
-              label="Batch Number*"
-              placeholder="2458"
-              id="batchNumber"
-              type="text"
-            />
-            <InputField
-              variant="auth"
-              extra="col-span-6"
-              label="Email*"
-              placeholder="mail@simmmple.com"
-              id="email"
-              type="text"
-            />
-          </div> */}
           <div
             className="mb-4 
          px-2"
           >
             <div className="mt-2 flex items-center">
-              <button
-                className="col-span-1 ml-2 text-sm font-medium text-navy-700 dark:text-white"
-                // onClick={() => editProducts('add')}
-              >
-                <MdAddCircleOutline style={{ color: 'green' }} />
-              </button>
               <p className="text-md ml-2 font-medium text-navy-700 dark:text-white">
-                Products
+                Edit Product
               </p>
             </div>
             <div className="mb-3 grid grid-cols-12 gap-2 px-2">
@@ -161,8 +100,8 @@ export default function SignInDefault() {
                 <InputField
                   variant="auth"
                   extra="col-span-5"
-                  label="Quantity*"
-                  placeholder="50 ml"
+                  label="Product ID*"
+                  placeholder="TG001TB"
                   id="sku_id"
                   type="text"
                   value={newdata.sku_id}
@@ -191,19 +130,12 @@ export default function SignInDefault() {
             </div>
           </div>
           <button
-            onClick={addProductFunction}
+            onClick={editProductFunction}
             className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
           >
-            Create order
+            Save Edit
           </button>
         </div>
-      </div>
-      <div className="mt-5 grid h-full grid-cols-1 gap-5 ">
-        <CheckTable
-          tableData={tableDataCheck}
-          name="Order History"
-          page="create-order"
-        />
       </div>
     </>
   );

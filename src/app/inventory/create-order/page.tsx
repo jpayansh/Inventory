@@ -3,7 +3,7 @@ import InputField from 'components/fields/InputField';
 
 import Checkbox from 'components/checkbox';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
-import CheckTable from 'components/admin/data-tables/CheckTable';
+import CheckTable from 'components/admin/data-tables/InventoryHistoryTable';
 import ApiFunction from 'utils/useApi';
 import { useEffect, useState } from 'react';
 import { MdAddCircleOutline, MdDelete } from 'react-icons/md';

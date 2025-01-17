@@ -21,20 +21,20 @@ const routes = [
     icon: <MdHome className="h-6 w-6" />,
   },
   {
-    name: 'Products',
+    name: 'Add Products',
     layout: '/inventory',
     path: 'products/add',
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
   },
   {
-    name: 'Inventory',
+    name: 'Inventory History',
     layout: '/inventory',
     icon: <MdBarChart className="h-6 w-6" />,
-    path: 'inventory',
+    path: 'inventory-history',
   },
 
   {
-    name: 'GenerateInvoice',
+    name: 'Generate Invoice',
     layout: '/inventory',
     icon: <MdFileCopy className="h-6 w-6" />,
     path: 'generate-invoice',
@@ -43,7 +43,7 @@ const routes = [
     name: 'Invoice History',
     layout: '/inventory',
     icon: <MdFileCopy className="h-6 w-6" />,
-    path: 'history',
+    path: 'invoice-history',
   },
   // {
   //   name: 'Profile',

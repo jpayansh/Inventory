@@ -465,8 +465,10 @@ import pool from 'helper/postgres';
 
 export default async function queryDb(query: string, values: any[] = []) {
   const dataBaseInstance = await pool.connect();
+
   try {
     const result = await dataBaseInstance.query(query, values);
+
     return result.rows;
   } catch (error) {
     console.error('Error in connecting DB --> ', error.message);

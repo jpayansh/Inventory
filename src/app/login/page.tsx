@@ -24,15 +24,16 @@ function SignInDefault() {
       const response = await ApiFunction({
         method: 'post',
         body: signin,
-        url: '/api/login',
+        url: 'login',
       });
       setSingin({
         name: '',
         password: '',
       });
+
       router.push('/inventory/default');
     } catch (error) {
-      console.log('Error in signInFunction api', error);
+      console.log('Error in signInFunction api-->', error);
     }
   };
 

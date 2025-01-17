@@ -1,20 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dropdown from 'components/dropdown';
 import { FiAlignJustify } from 'react-icons/fi';
 import NavLink from 'components/link/NavLink';
-import navbarimage from '/public/img/layout/Navbar.png';
-import { BsArrowBarUp } from 'react-icons/bs';
 import { FiSearch } from 'react-icons/fi';
 import { RiMoonFill, RiSunFill } from 'react-icons/ri';
-// import { RiMoonFill, RiSunFill } from 'react-icons/ri';
-// import Configurator from './Configurator';
-import {
-  IoMdNotificationsOutline,
-  IoMdInformationCircleOutline,
-} from 'react-icons/io';
 import avatar from '/public/img/avatars/avatar4.png';
 import Image from 'next/image';
-import { MdBarChart, MdDashboard, MdLibraryAdd } from 'react-icons/md';
+import { MdLibraryAdd } from 'react-icons/md';
+import ApiFunction from 'utils/useApi';
+import { useRouter } from 'next/navigation';
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -23,9 +17,22 @@ const Navbar = (props: {
   [x: string]: any;
 }) => {
   const { onOpenSidenav, brandText, mini, hovered } = props;
+  const router = useRouter();
+
   const [darkmode, setDarkmode] = React.useState(
     document.body.classList.contains('dark'),
   );
+  const logOut = async () => {
+    try {
+      const resposne = await ApiFunction({ url: 'logout' });
+      if (resposne.success) {
+        router.push('/login');
+      }
+      throw Error(resposne.message);
+    } catch (error) {
+      console.log('error in logout api function --> ', error);
+    }
+  };
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       <div className="ml-[6px]">
@@ -57,7 +64,7 @@ const Navbar = (props: {
         </p>
       </div>
       <div className="mt-5 flex gap-2">
-        <NavLink key="add-inventoryyyy" href="add-inventory">
+        <NavLink key="add-inventoryyyy" href="/inventory/add-inventory">
           <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
             <span className="text-brand-500 dark:text-white">
               <MdLibraryAdd />
@@ -65,7 +72,7 @@ const Navbar = (props: {
             <span className="text-md font-bold ">Add Inventory</span>
           </button>
         </NavLink>
-        <NavLink key="create-new-orderrr" href="create-order">
+        <NavLink key="create-new-orderrr" href="/inventory/create-order">
           <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
             <span className="text-brand-500 dark:text-white">
               <MdLibraryAdd />
@@ -73,7 +80,7 @@ const Navbar = (props: {
             <span className="text-md font-bold ">Create New Order</span>
           </button>
         </NavLink>
-        <NavLink key="add-product" href="products/add">
+        <NavLink key="add-product" href="/inventory/products/add">
           <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
             <span className="text-brand-500 dark:text-white">
               <MdLibraryAdd />
@@ -160,6 +167,7 @@ const Navbar = (props: {
               <a
                 href=" "
                 className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
+                onClick={logOut}
               >
                 Log Out
               </a>

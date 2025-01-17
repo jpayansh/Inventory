@@ -13,106 +13,45 @@ import {
 } from '@tanstack/react-table';
 import { MdEditSquare, MdDownload } from 'react-icons/md';
 import NavLink from 'components/link/NavLink';
-import { type } from 'os';
-
-type product = {
-  name: string;
-  units: number;
-  quantity: string;
-  code: string;
-  price: number;
-  batchNumber: number;
- 
-};
 
 type RowObj = {
-  companyName: string;
-  buyerAddress: string;
-  mobileNumber: number;
-  email: string;
-  gstNumber: string;
-  products: product[];
-  totalPrice: number;
-  totalQuantity: number;
-  date: string;
+  id: any;
+  batch_number: string;
+  product_name: string;
+  sku_id: string;
+  price_per_bottle: number;
+  price_total: number;
+  total_quantity: any;
+  created_at: string;
+  updated_at: string;
 };
 
 function InventoryHistoryTable(props: {
-  tableData: RowObj[];
+  tableData: any;
   name: string;
   page: string;
 }) {
   const { tableData, name, page } = props;
-  console.log(tableData, 'llklk');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor('companyName', {
-      id: 'companyName',
+    columnHelper.accessor('batch_number', {
+      id: 'batch_number',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Vender Name
+          Batch Number
         </p>
       ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
+      cell: (info: any) => (
+        <div className="flex items-center">
+          <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
+            {info.getValue()}
+          </p>
+        </div>
       ),
     }),
-    columnHelper.accessor('buyerAddress', {
-      id: 'buyerAddress',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Address
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('mobileNumber', {
-      id: 'mobileNumber',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Number
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('email', {
-      id: 'email',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">Email</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-
-    columnHelper.accessor('gstNumber', {
-      id: 'gstNumber',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          GST No.
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('products', {
-      id: 'product.name',
+    columnHelper.accessor('product_name', {
+      id: 'product_name',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
           Product Name
@@ -120,137 +59,15 @@ function InventoryHistoryTable(props: {
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()?.map((product, index) => (
-            <p
-              key={index}
-              className="text-sm font-bold text-navy-700 dark:text-white"
-            >
-              {product.name}
-            </p>
-          ))}
+          {info.getValue()}
         </p>
       ),
     }),
-    columnHelper.accessor('products', {
-      id: 'product.units',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">Units</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()?.map((product, index) => (
-            <p
-              key={index}
-              className="text-sm font-bold text-navy-700 dark:text-white"
-            >
-              {product.units}
-            </p>
-          ))}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('products', {
-      id: 'product.quantity',
+    columnHelper.accessor('sku_id', {
+      id: 'sku_id',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Quantity
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()?.map((product, index) => (
-            <p
-              key={index}
-              className="text-sm font-bold text-navy-700 dark:text-white"
-            >
-              {product.quantity}
-            </p>
-          ))}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('products', {
-      id: 'product.code',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">Code</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()?.map((product, index) => (
-            <p
-              key={index}
-              className="text-sm font-bold text-navy-700 dark:text-white"
-            >
-              {product.code}
-            </p>
-          ))}
-        </p>
-      ),
-    }),
-
-    columnHelper.accessor('products', {
-      id: 'product.code',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">Code</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()?.map((product, index) => (
-            <p
-              key={index}
-              className="text-sm font-bold text-navy-700 dark:text-white"
-            >
-              {product.code}
-            </p>
-          ))}
-        </p>
-      ),
-    }),
-
-    columnHelper.accessor('products', {
-      id: 'product.price',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">price</p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()?.map((product, index) => (
-            <p
-              key={index}
-              className="text-sm font-bold text-navy-700 dark:text-white"
-            >
-              {product.price}
-            </p>
-          ))}
-        </p>
-      ),
-    }),
-    columnHelper.accessor('products', {
-      id: 'product.batchNumber',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Batch Number
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()?.map((product, index) => (
-            <p
-              key={index}
-              className="text-sm font-bold text-navy-700 dark:text-white"
-            >
-              {product.batchNumber}
-            </p>
-          ))}
-        </p>
-      ),
-    }),
-  
-    columnHelper.accessor('totalPrice', {
-      id: 'totalPrice',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Total
+          Product ID
         </p>
       ),
       cell: (info) => (
@@ -259,11 +76,11 @@ function InventoryHistoryTable(props: {
         </p>
       ),
     }),
-    columnHelper.accessor('totalQuantity', {
-      id: 'totalQuantity',
+    columnHelper.accessor('price_per_bottle', {
+      id: 'price_per_bottle',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Total Qyt
+          Price/Bottle
         </p>
       ),
       cell: (info) => (
@@ -272,11 +89,11 @@ function InventoryHistoryTable(props: {
         </p>
       ),
     }),
-    columnHelper.accessor('date', {
-      id: 'date',
+    columnHelper.accessor('total_quantity', {
+      id: 'total_quantity',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Date
+          Total Quantity
         </p>
       ),
       cell: (info) => (
@@ -285,26 +102,60 @@ function InventoryHistoryTable(props: {
         </p>
       ),
     }),
-    // columnHelper.accessor('id', {
-    //   id: 'btn-edit',
-    //   header: () => <p className=""></p>,
+    columnHelper.accessor('price_total', {
+      id: 'price_total',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Total Price
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('created_at', {
+      id: 'created_at',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Created At
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('updated_at', {
+      id: 'updated_at',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Updated At
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
 
-    //   cell: (info) => (
-    //     <div className="flex items-center">
-    //       <NavLink href={`${page}/edit/${123456}`}>
-    //         <button className="p-1">
-    //           <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
-    //         </button>
-    //       </NavLink>
+    columnHelper.accessor('id', {
+      id: 'id',
+      header: () => <p className=""></p>,
 
-    //       <NavLink href="generate-invoice">
-    //         <button className="p-1">
-    //           <MdDownload className="m-2 text-green-500 dark:text-green-300" />
-    //         </button>
-    //       </NavLink>
-    //     </div>
-    //   ),
-    // }),
+      cell: (info) => (
+        <div className="flex items-center">
+          <NavLink href={`${page}/edit/${info.getValue()}`}>
+            <button className="p-1">
+              <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
+            </button>
+          </NavLink>
+        </div>
+      ),
+    }),
   ]; // eslint-disable-next-line
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
@@ -328,13 +179,13 @@ function InventoryHistoryTable(props: {
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          {name}
+          {name} Table
         </div>
 
-        {/* <CardMenu /> */}
+        <CardMenu />
       </header>
 
-      <div className="mt-8 overflow-x-scroll">
+      <div className="xl:overflow-x mt-8 overflow-x-scroll">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (

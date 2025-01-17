@@ -5,15 +5,14 @@ import type { NextRequest } from 'next/server';
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname,
-    isLogin = path === '/inventory/login';
+    isLogin = path === '/login';
   const token = request.cookies.get('token');
 
-  const user = await queryDb('SELECT * FROM users WHERE token = $1', [token]);
-  if (!user) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  if (token && isLogin && user) {
+  if (token && isLogin) {
+    // const user = await queryDb('SELECT * FROM users WHERE token = $1', [token]);
+    // if (!user) {
+    //   return NextResponse.redirect(new URL('/login', request.url));
+    // }
     return NextResponse.redirect(new URL('/inventory/default', request.url));
   }
   if (!token && !isLogin) {

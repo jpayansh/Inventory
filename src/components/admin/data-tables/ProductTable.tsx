@@ -14,21 +14,17 @@ import {
 import { MdEditSquare, MdDownload } from 'react-icons/md';
 import NavLink from 'components/link/NavLink';
 
-type qyt = {
-  code: string;
-  price: number;
-  quantity: number;
-};
-
 type RowObj = {
-  _id: string;
+  id: any;
   product_name: string;
   sku_id: string;
+  created_at: string;
+  updated_at: string;
 };
 
 function ProductTable(props: { tableData: any; name: string; page: string }) {
   const { tableData, name, page } = props;
-  console.log(tableData, 'llklk');
+  console.log(tableData, 'dataaa in products');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
@@ -58,14 +54,40 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
+    columnHelper.accessor('created_at', {
+      id: 'created_at',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Created At
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('updated_at', {
+      id: 'updated_at',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Updated At
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
 
-    columnHelper.accessor('_id', {
-      id: '_id',
+    columnHelper.accessor('id', {
+      id: 'id',
       header: () => <p className=""></p>,
 
       cell: (info) => (
         <div className="flex items-center">
-          <NavLink href={`${page}/edit/${info.getValue()}`}>
+          <NavLink href={`edit/${info.getValue()}`}>
             <button className="p-1">
               <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
             </button>
