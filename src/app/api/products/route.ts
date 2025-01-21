@@ -2,7 +2,7 @@ import queryDb from 'dbConfig/dbConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
+  const { searchParams } = await request.nextUrl;
   const id = searchParams.get('id');
   let query = '';
   console.log(id);
