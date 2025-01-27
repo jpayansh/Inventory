@@ -1,18 +1,17 @@
 'use client';
 import InputField from 'components/fields/InputField';
 
-import Checkbox from 'components/checkbox';
-
 import ApiFunction from 'utils/useApi';
 import { useState } from 'react';
-
 import { useRouter } from 'next/navigation';
 
 export default function SignInDefault() {
   const router = useRouter();
   const [newdata, setNewdDate] = useState({
-    product_name: '',
-    sku_id: '',
+    company_name: '',
+    company_address: '',
+    phone_number: '',
+    gst_number: '',
   });
   const addProduct = (e) => {
     setNewdDate((prv) => ({ ...prv, [e.target.id]: e.target.value }));
@@ -20,24 +19,31 @@ export default function SignInDefault() {
 
   const addProductFunction = async () => {
     try {
-      if (!newdata.product_name || !newdata.sku_id) {
+      if (
+        !newdata.company_name ||
+        !newdata.company_address ||
+        !newdata.phone_number ||
+        !newdata.gst_number
+      ) {
         throw Error('Fill all the details');
       }
       const response = await ApiFunction({
         method: 'post',
-        url: 'products',
+        url: 'vendors',
         body: { ...newdata },
       });
       if (!response.success) {
-        throw Error('Something went wrong at the time of adding product');
+        throw Error('Something went wrong in the vendor add api');
       }
-      router.replace('/inventory/products');
+      router.replace('/inventory/vendors');
     } catch (error) {
       console.log('error in addProductFunction in front -->', error);
     } finally {
       setNewdDate({
-        product_name: '',
-        sku_id: '',
+        company_name: '',
+        company_address: '',
+        phone_number: '',
+        gst_number: '',
       });
     }
   };
@@ -48,18 +54,13 @@ export default function SignInDefault() {
         {/* Sign in section */}
         <div className="mt-4 w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 ">
           <h3 className="mb-2.5 text-2xl font-bold text-navy-700 dark:text-white">
-            Add New Product
+            Add New Vendor
           </h3>
 
           <div
             className="mb-4 
          px-2"
           >
-            <div className="mt-2 flex items-center">
-              <p className="text-md ml-2 font-medium text-navy-700 dark:text-white">
-                Add Product
-              </p>
-            </div>
             <div className="mb-3 grid grid-cols-12 gap-2 px-2">
               {/* {products.length > 0 &&
                 products.map((item) => ( */}
@@ -67,43 +68,52 @@ export default function SignInDefault() {
                 <InputField
                   variant="auth"
                   extra="col-span-6"
-                  label="Product Name*"
-                  placeholder="Tirrent Booster"
-                  id="product_name"
+                  label="Company Name*"
+                  placeholder=""
+                  id="company_name"
                   type="text"
-                  value={newdata.product_name}
+                  value={newdata.company_name}
                   onChange={addProduct}
                 />
                 <InputField
                   variant="auth"
                   extra="col-span-5"
-                  label="Product ID*"
-                  placeholder="TG001TB"
-                  id="sku_id"
+                  label="Company Address*"
+                  placeholder=""
+                  id="company_address"
                   type="text"
-                  value={newdata.sku_id}
+                  value={newdata.company_address}
+                  onChange={addProduct}
+                />
+
+                <InputField
+                  variant="auth"
+                  extra="col-span-6"
+                  label="Phone Number*"
+                  placeholder=""
+                  id="phone_number"
+                  type="text"
+                  value={newdata.phone_number}
+                  onChange={addProduct}
+                />
+                <InputField
+                  variant="auth"
+                  extra="col-span-5"
+                  label="GST Number*"
+                  placeholder=""
+                  id="gst_number"
+                  type="text"
+                  value={newdata.gst_number}
                   onChange={addProduct}
                 />
               </>
-            </div>
-          </div>
-
-          <div
-            className="mb-4 flex items-center justify-start
-         px-2"
-          >
-            <div className="mt-2 flex items-center">
-              <Checkbox />
-              <p className="ml-2 text-sm font-medium text-navy-700 dark:text-white">
-                Order Completed
-              </p>
             </div>
           </div>
           <button
             onClick={addProductFunction}
             className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
           >
-            Create Product
+            Add Vendor
           </button>
         </div>
       </div>

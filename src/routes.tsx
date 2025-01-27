@@ -7,10 +7,9 @@ import {
   MdHome,
   MdOutlineShoppingCart,
   MdBarChart,
-  MdPerson,
-  MdLock,
-  MdFilter9Plus,
   MdFileCopy,
+  MdOutlineReorder,
+  MdOutlinePeople,
 } from 'react-icons/md';
 
 const routes = [
@@ -21,29 +20,34 @@ const routes = [
     icon: <MdHome className="h-6 w-6" />,
   },
   {
-    name: 'Add Products',
+    name: 'Products',
     layout: '/inventory',
-    path: 'products/add',
+    path: 'products',
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
   },
   {
-    name: 'Inventory History',
+    name: 'Stocks',
     layout: '/inventory',
     icon: <MdBarChart className="h-6 w-6" />,
-    path: 'inventory-history',
-  },
-
-  {
-    name: 'Generate Invoice',
-    layout: '/inventory',
-    icon: <MdFileCopy className="h-6 w-6" />,
-    path: 'generate-invoice',
+    path: 'stock',
   },
   {
-    name: 'Invoice History',
+    name: 'Orders',
+    layout: '/inventory',
+    icon: <MdOutlineReorder className="h-6 w-6" />,
+    path: 'orders',
+  },
+  {
+    name: 'Vendors',
+    layout: '/inventory',
+    icon: <MdOutlinePeople className="h-6 w-6" />,
+    path: 'vendors',
+  },
+  {
+    name: 'Invoice',
     layout: '/inventory',
     icon: <MdFileCopy className="h-6 w-6" />,
-    path: 'invoice-history',
+    path: 'invoice',
   },
   // {
   //   name: 'Profile',

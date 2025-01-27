@@ -11,28 +11,41 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-
+import { MdEditSquare, MdDownload } from 'react-icons/md';
 import NavLink from 'components/link/NavLink';
-import { MdDelete, MdEditSquare } from 'react-icons/md';
 
 type RowObj = {
   id: any;
-  total_units: number;
-  total_price: number;
+  company_name: string;
+  company_address: string;
+  phone_number: string;
+  gst_number: string;
   created_at: string;
   updated_at: string;
 };
 
-function InventoryTable(props: { tableData: any; name: string; page: string }) {
+function ProductTable(props: { tableData: any; name: string; page: string }) {
   const { tableData, name, page } = props;
+  console.log(tableData, 'dataaa in products');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor('total_units', {
-      id: 'total_units',
+    columnHelper.accessor('id', {
+      id: 'id',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">ID</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('company_name', {
+      id: 'company_name',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Total Units
+          Company Name
         </p>
       ),
       cell: (info) => (
@@ -41,11 +54,37 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
-    columnHelper.accessor('total_price', {
-      id: 'total_price',
+    columnHelper.accessor('company_address', {
+      id: 'company_address',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Total Price
+          Company Address
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('phone_number', {
+      id: 'phone_number',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Phone Number
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('gst_number', {
+      id: 'gst_number',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          GST Number
         </p>
       ),
       cell: (info) => (
@@ -81,26 +120,20 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
       ),
     }),
 
-    columnHelper.accessor('id', {
-      id: 'btn-edit',
-      header: () => <p className=""></p>,
+    // columnHelper.accessor('id', {
+    //   id: 'id',
+    //   header: () => <p className=""></p>,
 
-      cell: (info) => (
-        <div className="flex items-center">
-          <NavLink href={`${page}/edit/${info.getValue()}`}>
-            <button className="p-1">
-              <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
-            </button>
-          </NavLink>
-
-          <NavLink href="generate-invoice">
-            <button className="p-1">
-              <MdDelete className="m-2 text-green-500 dark:text-green-300" />
-            </button>
-          </NavLink>
-        </div>
-      ),
-    }),
+    //   cell: (info) => (
+    //     <div className="flex items-center">
+    //       <NavLink href={`${page}/edit/${info.getValue()}`}>
+    //         <button className="p-1">
+    //           <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
+    //         </button>
+    //       </NavLink>
+    //     </div>
+    //   ),
+    // }),
   ]; // eslint-disable-next-line
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
@@ -116,8 +149,11 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
   });
 
   useEffect(() => {
-    setData([...tableData]);
+    if (tableData) {
+      setData(tableData);
+    }
   }, [tableData]);
+
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
       <header className="relative flex items-center justify-between pt-4">
@@ -128,7 +164,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
         {/* <CardMenu /> */}
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="mt-8 overflow-x-scroll">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -162,6 +198,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
               .getRowModel()
               .rows.slice(0, 5)
               .map((row) => {
+                console.log('data in cell', row);
                 return (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {
@@ -187,5 +224,5 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
   );
 }
 
-export default InventoryTable;
+export default ProductTable;
 const columnHelper = createColumnHelper<RowObj>();

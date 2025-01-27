@@ -37,7 +37,7 @@ export default function SignInDefault({ params }: { params: { id: string } }) {
       console.log(response, 'response');
 
       if (response.success) {
-        router.push('/inventory/products/add');
+        router.push('/inventory/products');
       }
       throw new Error(response.message);
     } catch (error) {

@@ -21,7 +21,7 @@ export const findCurrentRoute = (
 
 export const getActiveRoute = (routes: IRoute[], pathname: string): string => {
   const route = findCurrentRoute(routes, pathname);
-  return route?.name || 'Main Dashboard';
+  return route?.name || 'Inventory';
 };
 
 export const getActiveNavbar = (

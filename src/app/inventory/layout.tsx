@@ -12,6 +12,7 @@ import React from 'react';
 import Navbar from 'components/navbarInventory';
 import Sidebar from 'components/sidebarInventory';
 import Footer from 'components/footer/Footer';
+import { AppWrapper } from 'contexts/DataContext';
 
 export default function Admin({ children }: { children: React.ReactNode }) {
   // states and functions
@@ -19,31 +20,39 @@ export default function Admin({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   if (isWindowAvailable()) document.documentElement.dir = 'ltr';
   return (
-    <div className="flex h-full w-full bg-gray-200 dark:bg-background-900">
-      <Sidebar routes={routes} open={open} setOpen={setOpen} variant="admin" />
-      {/* Navbar & Main Content */}
-      <div className="h-full w-full font-dm dark:bg-navy-900">
-        {/* Main Content */}
-        <main
-          className={`mx-2.5  flex-none transition-all dark:bg-navy-900 
+    <AppWrapper>
+      <div className="flex h-full w-full bg-gray-200 dark:bg-background-900">
+        <Sidebar
+          routes={routes}
+          open={open}
+          setOpen={setOpen}
+          variant="admin"
+        />
+        {/* Navbar & Main Content */}
+        <div className="h-full w-full font-dm dark:bg-navy-900">
+          {/* Main Content */}
+          <main
+            className={`mx-2.5  flex-none transition-all dark:bg-navy-900 
               md:pr-2 xl:ml-[323px]`}
-        >
-          {/* Routes */}
-          <div>
-            <Navbar
-              onOpenSidenav={() => setOpen(!open)}
-              brandText={getActiveRoute(routes, pathname)}
-              secondary={getActiveNavbar(routes, pathname)}
-            />
-            <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">
-              {children}
+          >
+            {/* Routes */}
+            <div>
+              <Navbar
+                onOpenSidenav={() => setOpen(!open)}
+                brandText={getActiveRoute(routes, pathname)}
+                secondary={getActiveNavbar(routes, pathname)}
+                pathname={pathname}
+              />
+              <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">
+                {children}
+              </div>
+              <div className="p-3">
+                <Footer />
+              </div>
             </div>
-            <div className="p-3">
-              <Footer />
-            </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
+    </AppWrapper>
   );
 }

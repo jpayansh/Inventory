@@ -11,36 +11,25 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-
+import { MdEditSquare, MdDownload } from 'react-icons/md';
 import NavLink from 'components/link/NavLink';
-import { MdDelete, MdEditSquare } from 'react-icons/md';
 
 type RowObj = {
-  id: any;
-  total_units: number;
-  total_price: number;
+  id: string;
+
   created_at: string;
   updated_at: string;
+  total_price: number;
+  total_units: number;
+
+  company_name: string;
 };
 
-function InventoryTable(props: { tableData: any; name: string; page: string }) {
+function OrdersTable(props: { tableData: any; name: string; page: string }) {
   const { tableData, name, page } = props;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor('total_units', {
-      id: 'total_units',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Total Units
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
     columnHelper.accessor('total_price', {
       id: 'total_price',
       header: () => (
@@ -54,6 +43,33 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
+    columnHelper.accessor('total_units', {
+      id: 'total_units',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Total Units
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('company_name', {
+      id: 'company_name',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Company Name
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+
     columnHelper.accessor('created_at', {
       id: 'created_at',
       header: () => (
@@ -95,7 +111,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
 
           <NavLink href="generate-invoice">
             <button className="p-1">
-              <MdDelete className="m-2 text-green-500 dark:text-green-300" />
+              <MdDownload className="m-2 text-green-500 dark:text-green-300" />
             </button>
           </NavLink>
         </div>
@@ -114,10 +130,12 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
-
   useEffect(() => {
-    setData([...tableData]);
+    if (tableData.length > 0) {
+      setData(tableData);
+    }
   }, [tableData]);
+
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
       <header className="relative flex items-center justify-between pt-4">
@@ -128,7 +146,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
         {/* <CardMenu /> */}
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="xl:overflow-x mt-8 overflow-x-scroll">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -161,7 +179,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
             {table
               .getRowModel()
               .rows.slice(0, 5)
-              .map((row) => {
+              .map((row, index) => {
                 return (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => {
@@ -187,5 +205,5 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
   );
 }
 
-export default InventoryTable;
+export default OrdersTable;
 const columnHelper = createColumnHelper<RowObj>();

@@ -87,7 +87,7 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
 
       cell: (info) => (
         <div className="flex items-center">
-          <NavLink href={`edit/${info.getValue()}`}>
+          <NavLink href={`${page}/edit/${info.getValue()}`}>
             <button className="p-1">
               <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
             </button>

@@ -2,14 +2,23 @@ CREATE DATABASE inventorydb;
 
 
 CREATE TABLE IF NOT EXISTS inventories(
-    id SERIAL PRIMARY KEY,
-    batch_number VARCHAR(100) UNIQUE NOT NULL,
-    product_id INT REFERENCES products(id) ON DELETE CASCADE,
-    price_per_bottle DECIMAL(10, 2) NOT NULL,   
-    total_quantity INT NOT NULL,
-    price_total DECIMAL(10, 2) NOT NULL,
+    id SERIAL PRIMARY KEY,  
+    total_price DECIMAL(10, 2) NOT NULL,   
+    total_units INT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS inventory_product(
+    inventory_id INT REFERENCES inventories(id) ON DELETE CASCADE,
+    product_id INT REFERENCES products(id) ON DELETE CASCADE,
+    price DECIMAL(10, 2) NOT NULL,   
+    units INT NOT NULL,
+    batch_number INT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (inventory_id,product_id)
+    
 );
 
 CREATE TABLE IF NOT EXISTS products(
@@ -24,7 +33,7 @@ CREATE TABLE IF NOT EXISTS vendors(
     id SERIAL PRIMARY KEY,
     company_name VARCHAR(100) UNIQUE NOT NULL,  
     company_address VARCHAR(255) NOT NULL,
-    phone_number INT UNIQUE NOT NULL,
+    phone_number VARCHAR(100)  UNIQUE NOT NULL,
     gst_number VARCHAR(255),               
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
@@ -35,7 +44,6 @@ CREATE TABLE IF NOT EXISTS orders(
     vendor_id INT REFERENCES vendors(id) ON DELETE CASCADE,
     total_price DECIMAL(10, 2) NOT NULL,   
     total_units INT NOT NULL,
-     batch_number INT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -43,7 +51,9 @@ CREATE TABLE IF NOT EXISTS orders(
 CREATE TABLE IF NOT EXISTS order_products(
     order_id INT REFERENCES orders(id) ON DELETE CASCADE,
     product_id INT REFERENCES products(id) ON DELETE CASCADE,
-   
+    price DECIMAL(10, 2) NOT NULL,   
+    units INT NOT NULL,
+    batch_number INT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (order_id,product_id)
@@ -61,7 +71,6 @@ CREATE TABLE IF NOT EXISTS users(
 CREATE TABLE IF NOT EXISTS invoices(
     order_id INT REFERENCES orders(id) ON DELETE CASCADE,
     product_id INT REFERENCES products(id) ON DELETE CASCADE,
-   
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (order_id,product_id)
