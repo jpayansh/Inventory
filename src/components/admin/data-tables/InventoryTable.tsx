@@ -11,28 +11,47 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-
-import NavLink from 'components/link/NavLink';
 import { MdDelete, MdEditSquare } from 'react-icons/md';
 
 type RowObj = {
   id: any;
-  total_units: number;
-  total_price: number;
+  product_id: number;
+  product_name: string;
+  index: number;
+  units: number;
+  price: number;
+  batch_number: number;
   created_at: string;
   updated_at: string;
+  packing: string;
 };
 
-function InventoryTable(props: { tableData: any; name: string; page: string }) {
-  const { tableData, name, page } = props;
+function InventoryTable(props: {
+  tableData: any;
+  name: string;
+  page: string;
+  deleteFromTable: (id: number) => {};
+}) {
+  const { tableData, name, page, deleteFromTable } = props;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor('total_units', {
-      id: 'total_units',
+    columnHelper.accessor('index', {
+      id: 'index',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">S/N</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()})
+        </p>
+      ),
+    }),
+    columnHelper.accessor('packing', {
+      id: 'packing',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Total Units
+          Varient
         </p>
       ),
       cell: (info) => (
@@ -41,11 +60,33 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
-    columnHelper.accessor('total_price', {
+    columnHelper.accessor('units', {
+      id: 'total_units',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">Units</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('price', {
       id: 'total_price',
       header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">Price</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('batch_number', {
+      id: 'batch_number',
+      header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Total Price
+          Batch No
         </p>
       ),
       cell: (info) => (
@@ -67,37 +108,28 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
-    columnHelper.accessor('updated_at', {
-      id: 'updated_at',
-      header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Updated At
-        </p>
-      ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
-    }),
 
     columnHelper.accessor('id', {
       id: 'btn-edit',
       header: () => <p className=""></p>,
 
       cell: (info) => (
-        <div className="flex items-center">
-          <NavLink href={`${page}/edit/${info.getValue()}`}>
+        <div className="flex items-center ">
+          {/* <NavLink href={`${page}/edit/${info.getValue()}`}>
             <button className="p-1">
               <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
             </button>
-          </NavLink>
+          </NavLink> */}
 
-          <NavLink href="generate-invoice">
-            <button className="p-1">
-              <MdDelete className="m-2 text-green-500 dark:text-green-300" />
-            </button>
-          </NavLink>
+          <button
+            onClick={() => deleteFromTable(info.getValue())}
+            className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+          >
+            <span className="text-brand-500 dark:text-white">
+              <MdDelete style={{ color: 'red' }} />
+            </span>
+            <span className="text-md font-bold ">Delete</span>
+          </button>
         </div>
       ),
     }),
@@ -116,7 +148,16 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
   });
 
   useEffect(() => {
-    setData([...tableData]);
+    if (tableData.length > 0) {
+      setData(
+        tableData.map((data, index) => ({
+          ...data,
+          index: index + 1,
+          created_at: data.created_at.split('T')[0],
+          updated_at: data.updated_at.split('T')[0],
+        })),
+      );
+    }
   }, [tableData]);
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
@@ -128,7 +169,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
         {/* <CardMenu /> */}
       </header>
 
-      <div className="mt-8 overflow-x-scroll xl:overflow-x-hidden">
+      <div className="xl:overflow-x mt-8 overflow-x-scroll">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -139,7 +180,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-200 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      className="cursor-pointer border-b border-gray-200 pb-2 pr-2 pt-4 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -168,7 +209,7 @@ function InventoryTable(props: { tableData: any; name: string; page: string }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[150px] border-white/0 py-3  pr-4"
+                          className="min-w-[100px] border-white/0 py-3  pr-2"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

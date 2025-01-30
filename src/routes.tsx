@@ -14,7 +14,7 @@ import {
 
 const routes = [
   {
-    name: 'Main Dashboard',
+    name: 'Dashboard',
     layout: '/inventory',
     path: 'default',
     icon: <MdHome className="h-6 w-6" />,
@@ -43,12 +43,12 @@ const routes = [
     icon: <MdOutlinePeople className="h-6 w-6" />,
     path: 'vendors',
   },
-  {
-    name: 'Invoice',
-    layout: '/inventory',
-    icon: <MdFileCopy className="h-6 w-6" />,
-    path: 'invoice',
-  },
+  // {
+  //   name: 'Invoice',
+  //   layout: '/inventory',
+  //   icon: <MdFileCopy className="h-6 w-6" />,
+  //   path: 'invoice',
+  // },
   // {
   //   name: 'Profile',
   //   layout: '/admin',

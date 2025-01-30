@@ -106,7 +106,7 @@ export default function Page() {
       if (!response.success) {
         throw Error(response.message);
       }
-      router.push('stock');
+      router.replace('/inventory/stock');
     } catch (error) {
       console.log('error in create order api --> ', error);
     }

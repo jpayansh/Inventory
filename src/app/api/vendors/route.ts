@@ -26,13 +26,17 @@ export async function GET(request: NextRequest) {
 }
 export async function POST(request: NextRequest) {
   try {
-    const { company_name, company_address, phone_number, gst_number } =
+    const { company_name, company_address, phone_number, gst_number, email } =
       await request.json();
 
     if (
-      [company_name, company_address, phone_number, gst_number].some(
-        (item) => item.trim() === '',
-      )
+      [
+        company_name,
+        company_address,
+        phone_number.toString(),
+        gst_number,
+        email,
+      ].some((item) => item.trim() === '')
     ) {
       return NextResponse.json(
         {
@@ -46,8 +50,14 @@ export async function POST(request: NextRequest) {
     }
 
     const insertVendorsData = await queryDb(
-      'INSERT INTO vendors (company_name, company_address, phone_number, gst_number) VALUES ($1,$2,$3,$4) RETURNING id',
-      [company_name.toUpperCase(), company_address, phone_number, gst_number],
+      'INSERT INTO vendors (company_name, company_address, phone_number, gst_number,email) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+      [
+        company_name.toUpperCase(),
+        company_address,
+        phone_number.toString(),
+        gst_number,
+        email,
+      ],
     );
 
     if (!insertVendorsData) {

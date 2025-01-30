@@ -1,7 +1,5 @@
 'use client';
 import InputField from 'components/fields/InputField';
-import tableDataCheck from 'variables/data-tables/tableDataCheck';
-import CheckTable from 'components/admin/data-tables/InventoryHistoryTable';
 import ApiFunction from 'utils/useApi';
 import { useContext, useEffect, useState } from 'react';
 import Card from 'components/card';
@@ -20,6 +18,7 @@ function SignInDefault() {
       units: '',
       product_id: '',
       batch_number: '',
+      packing: 'gm',
     },
   ]);
   const addNewProduct = (type: string = '', id: number = undefined) => {
@@ -31,6 +30,7 @@ function SignInDefault() {
           price: '',
           units: '',
           batch_number: '',
+          packing: products[0].packing,
         },
       ]);
     } else {
@@ -84,6 +84,7 @@ function SignInDefault() {
           units: '',
           product_id: products[0].id,
           batch_number: '',
+          packing: products[0].packing,
         },
       ]);
 
@@ -102,7 +103,7 @@ function SignInDefault() {
 
         updatedProducts = prev.map((product, productIndex) =>
           productIndex === index
-            ? { ...product, product_id: prod[0].id }
+            ? { ...product, product_id: prod[0].id, packing: prod[0].packing }
             : product,
         );
       } else {
@@ -129,7 +130,13 @@ function SignInDefault() {
   };
   useEffect(() => {
     if (products.length > 0) {
-      setNewProduct((prv) => [{ ...prv[0], product_id: products[0].id }]);
+      setNewProduct((prv) => [
+        {
+          ...prv[0],
+          product_id: products[0].id,
+          packing: products[0].packing,
+        },
+      ]);
 
       console.log(products);
     }
@@ -146,19 +153,18 @@ function SignInDefault() {
             <h3 className="mb-2.5 text-2xl font-bold text-navy-700 dark:text-white">
               Enter items to add to Stock
             </h3>
-            <div className="mt-2 flex items-center">
-              <button>
-                <MdAddCircleOutline
-                  className="font-bold text-brand-500 dark:text-white"
-                  style={{ color: 'green' }}
-                  onClick={() => {
-                    addNewProduct('add');
-                  }}
-                />
+            <div className="m-2 flex items-center">
+              <button
+                className="linear flex items-center justify-center gap-1 rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+                onClick={() => {
+                  addNewProduct('add');
+                }}
+              >
+                <span className="text-brand-500 dark:text-white">
+                  <MdAddCircleOutline style={{ color: 'green' }} />
+                </span>
+                <span className="text-sm font-medium">Add</span>
               </button>
-              <p className="text-md ml-2 font-medium text-navy-700 dark:text-white">
-                Products
-              </p>
             </div>
 
             {newProduct &&
@@ -190,7 +196,7 @@ function SignInDefault() {
                   </div>
                   <InputField
                     variant="auth"
-                    extra="col-span-3"
+                    extra="col-span-2"
                     label="Price*"
                     placeholder="3000"
                     id="price"
@@ -210,7 +216,7 @@ function SignInDefault() {
                   />
                   <InputField
                     variant="auth"
-                    extra="col-span-3"
+                    extra="col-span-2"
                     label="Batch Number*"
                     placeholder="1"
                     id="batch_number"
@@ -218,16 +224,27 @@ function SignInDefault() {
                     value={newProduct[id].batch_number}
                     onChange={(e) => handleChangeNewProduct(e, id)}
                   />
-                  <button
-                    onClick={() => {
-                      addNewProduct('delete', id);
-                    }}
-                  >
-                    <MdDelete
-                      className="font-bold text-brand-500 dark:text-white"
-                      style={{ color: 'red' }}
-                    />
-                  </button>
+                  <InputField
+                    variant="auth"
+                    extra="col-span-2"
+                    label="Packing*"
+                    placeholder="100 gm"
+                    id=""
+                    type="text"
+                    value={newProduct[id].packing}
+                  />
+
+                  <div className="mb-1 flex items-end justify-center">
+                    <button
+                      onClick={() => addNewProduct('delete', id)}
+                      className="linear flex items-center justify-center rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+                    >
+                      <span className="text-brand-500 dark:text-white">
+                        <MdDelete style={{ color: 'red' }} />
+                      </span>
+                      <span className="text-sm font-bold ">Delete</span>
+                    </button>
+                  </div>
                 </div>
               ))}
 

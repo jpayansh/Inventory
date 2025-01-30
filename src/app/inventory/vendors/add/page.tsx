@@ -12,20 +12,28 @@ export default function SignInDefault() {
     company_address: '',
     phone_number: '',
     gst_number: '',
+    email: '',
   });
   const addProduct = (e) => {
     setNewdDate((prv) => ({ ...prv, [e.target.id]: e.target.value }));
   };
 
   const addProductFunction = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     try {
       if (
         !newdata.company_name ||
         !newdata.company_address ||
         !newdata.phone_number ||
-        !newdata.gst_number
+        !newdata.gst_number ||
+        !newdata.email
       ) {
+        alert('Fill all the details');
         throw Error('Fill all the details');
+      }
+      if (!emailRegex.test(newdata.email)) {
+        alert('Wrong Email Format');
+        throw Error('Wrong Email Format');
       }
       const response = await ApiFunction({
         method: 'post',
@@ -36,15 +44,15 @@ export default function SignInDefault() {
         throw Error('Something went wrong in the vendor add api');
       }
       router.replace('/inventory/vendors');
-    } catch (error) {
-      console.log('error in addProductFunction in front -->', error);
-    } finally {
       setNewdDate({
         company_name: '',
         company_address: '',
         phone_number: '',
         gst_number: '',
+        email: '',
       });
+    } catch (error) {
+      console.log('error in addProductFunction in front -->', error);
     }
   };
 
@@ -92,7 +100,7 @@ export default function SignInDefault() {
                   label="Phone Number*"
                   placeholder=""
                   id="phone_number"
-                  type="text"
+                  type="number"
                   value={newdata.phone_number}
                   onChange={addProduct}
                 />
@@ -104,6 +112,16 @@ export default function SignInDefault() {
                   id="gst_number"
                   type="text"
                   value={newdata.gst_number}
+                  onChange={addProduct}
+                />
+                <InputField
+                  variant="auth"
+                  extra="col-span-6"
+                  label="Email*"
+                  placeholder=""
+                  id="email"
+                  type="email"
+                  value={newdata.email}
                   onChange={addProduct}
                 />
               </>

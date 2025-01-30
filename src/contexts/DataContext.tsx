@@ -21,10 +21,18 @@ interface Vendor {
   // Add other vendor fields as needed
 }
 
+interface Stock {
+  units: number;
+  batch_number: number;
+  product_id: number;
+  product_name: string;
+}
+
 // Define the context's value type, including both products and vendors
 interface DataContextType {
   products: Product[];
   vendors: Vendor[];
+  stocks: Stock[];
 }
 
 export const DataContext = createContext<DataContextType | undefined>(
@@ -34,13 +42,25 @@ export const DataContext = createContext<DataContextType | undefined>(
 export function AppWrapper({ children }) {
   const [products, setProducts] = useState([]);
   const [vendors, setVendors] = useState([]);
+  const [stocks, setStocks] = useState([]);
 
   const fetchProductData = async () => {
     try {
       const response = await ApiFunction({ url: 'products' });
       setProducts(response?.data || []);
     } catch (error) {
-      console.error('Failed to fetch data in context:', error);
+      console.error('Failed to fetch product data in context:', error);
+    }
+  };
+
+  const fetchStockData = async () => {
+    try {
+      const response = await ApiFunction({
+        url: 'inventory?forOrderPage=true',
+      });
+      setStocks(response?.data || []);
+    } catch (error) {
+      console.error('Failed to fetch stock data in context:', error);
     }
   };
 
@@ -49,16 +69,17 @@ export function AppWrapper({ children }) {
       const response = await ApiFunction({ url: 'vendors' });
       setVendors(response?.data || []);
     } catch (error) {
-      console.error('Failed to fetch data in context:', error);
+      console.error('Failed to fetch vendor data in context:', error);
     }
   };
 
   useEffect(() => {
     fetchProductData();
     fetchVendorData();
+    fetchStockData();
   }, []);
   return (
-    <DataContext.Provider value={{ products, vendors }}>
+    <DataContext.Provider value={{ products, vendors, stocks }}>
       {children}
     </DataContext.Provider>
   );

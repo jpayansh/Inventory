@@ -26,17 +26,25 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.log('Error in products controller --> ', error.message);
+    console.log('Something went wrong in the product controller --> ', error);
+    return NextResponse.json(
+      { message: 'Something went wrong', data: [], success: false },
+      { status: 500 },
+    );
   }
 }
 export async function POST(request: NextRequest) {
   try {
-    const { product_name, sku_id } = await request.json();
+    const { product_name, sku_id, packing, packaging } = await request.json();
 
-    if ([product_name, sku_id].some((item) => item.trim() === '')) {
+    if (
+      [product_name, sku_id, packing, packaging].some(
+        (item) => item.trim() === '',
+      )
+    ) {
       return NextResponse.json(
         {
-          message: 'Empty product_name, sku_id or all',
+          message: 'Empty product_name, sku_id,packing ,packaging or all',
           success: false,
           data: [],
         },
@@ -45,8 +53,12 @@ export async function POST(request: NextRequest) {
     }
 
     const insertProductsData = await queryDb(
-      'INSERT INTO products (product_name, sku_id) VALUES ($1,$2) RETURNING id',
-      [product_name, sku_id.toUpperCase()],
+      'INSERT INTO products (product_name, sku_id,packing) VALUES ($1,$2,$3) RETURNING id',
+      [
+        product_name.toUpperCase(),
+        sku_id.toUpperCase(),
+        `${packaging} ${packing}`,
+      ],
     );
 
     if (!insertProductsData) {
@@ -61,7 +73,11 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.log(error);
+    console.log('Something went wrong in the product controller --> ', error);
+    return NextResponse.json(
+      { message: 'Something went wrong', data: [], success: false },
+      { status: 500 },
+    );
   }
 }
 export async function DELETE(request: NextRequest) {
@@ -96,17 +112,26 @@ export async function DELETE(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.log(error);
+    console.log('Something went wrong in the product controller --> ', error);
+    return NextResponse.json(
+      { message: 'Something went wrong', data: [], success: false },
+      { status: 500 },
+    );
   }
 }
 export async function PUT(request: NextRequest) {
   try {
-    const { product_name, sku_id, product_id } = await request.json();
+    const { product_name, product_id, sku_id, packing, packaging } =
+      await request.json();
 
-    if ([product_name, sku_id, product_id].some((data) => data.trim() == '')) {
+    if (
+      [product_name, sku_id, packing, packaging].some(
+        (item) => item.trim() === '',
+      )
+    ) {
       return NextResponse.json(
         {
-          message: 'Empty product_id or sku_id, product_name',
+          message: 'Empty product_name, sku_id,packing ,packaging or all',
           success: false,
           data: [],
         },
@@ -115,9 +140,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const productUpdatedData = await queryDb(
-      'UPDATE products SET product_name = $1, sku_id = $2, updated_at = $3 WHERE id = $4;',
+      'UPDATE products SET product_name = $1,packing=$2 ,sku_id = $3, updated_at = $4 WHERE id = $5;',
       [
         product_name,
+        `${packaging} ${packing}`,
         sku_id.toUpperCase(),
         new Date(Date.now()).toISOString(),
         product_id,
@@ -140,6 +166,10 @@ export async function PUT(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.log(error);
+    console.log('Something went wrong in the product controller --> ', error);
+    return NextResponse.json(
+      { message: 'Something went wrong', data: [], success: false },
+      { status: 500 },
+    );
   }
 }

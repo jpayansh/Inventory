@@ -16,6 +16,7 @@ import NavLink from 'components/link/NavLink';
 
 type RowObj = {
   id: any;
+  index: number;
   company_name: string;
   company_address: string;
   phone_number: string;
@@ -30,14 +31,14 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
-    columnHelper.accessor('id', {
-      id: 'id',
+    columnHelper.accessor('index', {
+      id: 'index',
       header: () => (
-        <p className="text-sm font-bold text-gray-600 dark:text-white">ID</p>
+        <p className="text-sm font-bold text-gray-600 dark:text-white">S/n</p>
       ),
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
+          {info.getValue()})
         </p>
       ),
     }),
@@ -149,8 +150,15 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
   });
 
   useEffect(() => {
-    if (tableData) {
-      setData(tableData);
+    if (tableData.length > 0) {
+      setData(
+        tableData.map((data, index) => ({
+          ...data,
+          index: index + 1,
+          created_at: data.created_at.split('T')[0],
+          updated_at: data.updated_at.split('T')[0],
+        })),
+      );
     }
   }, [tableData]);
 
@@ -175,7 +183,7 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-200 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      className="cursor-pointer border-b border-gray-200 pb-2 pr-1 pt-4 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -205,7 +213,7 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[150px] border-white/0 py-3  pr-4"
+                          className="min-w-[130px] border-white/0 py-3  pr-1"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

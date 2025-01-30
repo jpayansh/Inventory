@@ -5,7 +5,9 @@ const ApiFunction = async ({ method = 'get', body = null, url }) => {
     var response = await axios({
       method,
       url: `http://localhost:3000/api/${url}`,
-      ...(method == 'post' || method == 'put' ? { data: body } : { body }),
+      ...(method == 'post' || method == 'put' || method == 'delete'
+        ? { data: body }
+        : { body }),
     });
     return response.data;
   } catch (error) {

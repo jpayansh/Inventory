@@ -16,10 +16,12 @@ import NavLink from 'components/link/NavLink';
 
 type RowObj = {
   id: any;
+  index: number;
   product_name: string;
   sku_id: string;
   created_at: string;
   updated_at: string;
+  packing: string;
 };
 
 function ProductTable(props: { tableData: any; name: string; page: string }) {
@@ -28,11 +30,35 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
+    columnHelper.accessor('index', {
+      id: 'index',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">S/N</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()})
+        </p>
+      ),
+    }),
     columnHelper.accessor('product_name', {
       id: 'product_name',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
           Product Name
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('packing', {
+      id: 'packing',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Packing
         </p>
       ),
       cell: (info) => (
@@ -88,8 +114,11 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
       cell: (info) => (
         <div className="flex items-center">
           <NavLink href={`${page}/edit/${info.getValue()}`}>
-            <button className="p-1">
-              <MdEditSquare className="m-2 text-green-500 dark:text-green-300" />
+            <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
+              <span className="text-brand-500 dark:text-white">
+                <MdEditSquare />
+              </span>
+              <span className="text-md font-bold ">Edit</span>
             </button>
           </NavLink>
         </div>
@@ -110,8 +139,15 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
   });
 
   useEffect(() => {
-    if (tableData) {
-      setData(tableData);
+    if (tableData.length > 0) {
+      setData(
+        tableData.map((data, index) => ({
+          ...data,
+          index: index + 1,
+          created_at: data.created_at.split('T')[0],
+          updated_at: data.updated_at.split('T')[0],
+        })),
+      );
     }
   }, [tableData]);
 
@@ -136,7 +172,7 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-200 pb-2 pr-4 pt-4 text-start dark:border-white/30"
+                      className="cursor-pointer border-b border-gray-200 pb-2 pr-2 pt-4 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -166,7 +202,7 @@ function ProductTable(props: { tableData: any; name: string; page: string }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[150px] border-white/0 py-3  pr-4"
+                          className="min-w-[120px] border-white/0 py-3  pr-2"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

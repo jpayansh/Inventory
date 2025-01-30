@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 export default function SignInDefault() {
   const router = useRouter();
-  const { products, vendors } = useContext<any>(DataContext);
+  const { vendors, stocks } = useContext<any>(DataContext);
   const [vendor, setVendor] = useState();
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQunatity, setTotalQuantity] = useState(0);
@@ -19,8 +19,12 @@ export default function SignInDefault() {
       units: '',
       product_id: '',
       batch_number: '',
+      product_name: '',
+      available_quantity: '',
     },
   ]);
+
+  console.log(vendor, stocks);
 
   const setVendorValues = (e) => {
     const { value } = e.target;
@@ -33,10 +37,9 @@ export default function SignInDefault() {
       setNewProduct((prv) => [
         ...prv,
         {
-          product_id: products[0].id,
+          ...stocks[0],
           price: '',
-          units: '',
-          batch_number: '',
+          available_quantity: stocks[0].units,
         },
       ]);
     } else {
@@ -64,16 +67,27 @@ export default function SignInDefault() {
 
   const handleChangeNewProduct = (e, index: any) => {
     const { id, value } = e.target;
+    if (id == 'units') {
+      if (value > newProduct[index].available_quantity) {
+        alert('More than available quantity');
+        return;
+      }
+    }
     setNewProduct((prev) => {
       let updatedProducts;
       if (id == 'product_name') {
-        const prod = products.filter(
-          (product) => product.product_name == value,
-        );
+        const product = value.split('/');
+        const product_name = product[0];
+        const product_batch = product[1];
 
+        const stock = stocks.filter(
+          (stock) =>
+            stock.product_name == product_name &&
+            stock.batch_number == product_batch,
+        );
         updatedProducts = prev.map((product, productIndex) =>
           productIndex === index
-            ? { ...product, product_id: prod[0].id }
+            ? { ...stock[0], available_quantity: stock[0].units, price: '' }
             : product,
         );
       } else {
@@ -106,43 +120,42 @@ export default function SignInDefault() {
       vendor_id: vendor,
       products: newProduct,
     };
-    console.log(data, 'dataaa');
 
-    try {
-      const response = await ApiFunction({
-        method: 'post',
-        url: 'orders',
-        body: { ...data },
-      });
+    console.log(data);
 
-      if (!response.success) {
-        throw Error(response.message);
-      }
-      router.replace('/inventory/orders');
-    } catch (error) {
-      console.log('error in create order api --> ', error);
-    } finally {
-      setNewProduct((prv) => [
-        {
-          price: '',
-          units: '',
-          product_id: products[0].id,
-          batch_number: '',
-        },
-      ]);
-      setVendor(vendors[0].id);
-      setTotalPrice(0);
-      setTotalQuantity(0);
-    }
+    // try {
+    //   const response = await ApiFunction({
+    //     method: 'post',
+    //     url: 'orders',
+    //     body: { ...data },
+    //   });
+
+    //   if (!response.success) {
+    //     throw Error(response.message);
+    //   }
+    //   router.replace('/inventory/orders');
+    // } catch (error) {
+    //   console.log('error in create order api --> ', error);
+    // } finally {
+    //   setNewProduct([
+    //     { ...stocks[0], price: '', available_quantity: stocks[0].units },
+    //   ]);
+    //   setVendor(vendors[0].id);
+    //   setTotalPrice(0);
+    //   setTotalQuantity(0);
+    // }
   };
 
   useEffect(() => {
-    if (vendors.length > 0 && products.length > 0) {
-      setNewProduct((prv) => [{ ...prv[0], product_id: products[0].id }]);
+    if (vendors.length > 0 && stocks.length > 0) {
+      setNewProduct([
+        { ...stocks[0], price: '', available_quantity: stocks[0].units },
+      ]);
       setVendor(vendors[0].id);
-      console.log(products);
     }
-  }, [vendors, products]);
+  }, [vendors, stocks]);
+
+  console.log(newProduct, 'addNewProduct');
 
   return (
     <>
@@ -181,19 +194,18 @@ export default function SignInDefault() {
                 )}
               </select>
             </div>
-            <div className="mt-2 flex items-center">
-              <button>
-                <MdAddCircleOutline
-                  className="font-bold text-brand-500 dark:text-white"
-                  style={{ color: 'green' }}
-                  onClick={() => {
-                    addNewProduct('add');
-                  }}
-                />
+            <div className="m-2 flex items-center">
+              <button
+                className="linear flex items-center justify-center gap-1 rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+                onClick={() => {
+                  addNewProduct('add');
+                }}
+              >
+                <span className="text-brand-500 dark:text-white">
+                  <MdAddCircleOutline style={{ color: 'green' }} />
+                </span>
+                <span className="text-sm font-medium">Add</span>
               </button>
-              <p className="text-md ml-2 font-medium text-navy-700 dark:text-white">
-                Products
-              </p>
             </div>
 
             {newProduct &&
@@ -209,13 +221,13 @@ export default function SignInDefault() {
                       className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none"
                       onChange={(e) => handleChangeNewProduct(e, id)}
                     >
-                      {products && products.length > 0 ? (
-                        products.map((product) => (
+                      {stocks && stocks.length > 0 ? (
+                        stocks.map((product) => (
                           <option
                             key={product.id + product.product_name}
-                            value={product.product_name}
+                            value={`${product.product_name}/${product.batch_number}`}
                           >
-                            {product.product_name}
+                            {`${product.product_name} B/No. (${product.batch_number})`}
                           </option>
                         ))
                       ) : (
@@ -246,23 +258,23 @@ export default function SignInDefault() {
                   <InputField
                     variant="auth"
                     extra="col-span-3"
-                    label="Batch Number*"
-                    placeholder="1"
-                    id="batch_number"
+                    label="Available Quantity"
+                    placeholder=""
+                    id=""
                     type="text"
-                    value={newProduct[id].batch_number}
-                    onChange={(e) => handleChangeNewProduct(e, id)}
+                    value={newProduct[id].available_quantity}
                   />
-                  <button
-                    onClick={() => {
-                      addNewProduct('delete', id);
-                    }}
-                  >
-                    <MdDelete
-                      className="font-bold text-brand-500 dark:text-white"
-                      style={{ color: 'red' }}
-                    />
-                  </button>
+                  <div className="mb-1 flex items-end justify-center">
+                    <button
+                      onClick={() => addNewProduct('delete', id)}
+                      className="linear flex items-center justify-center rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+                    >
+                      <span className="text-brand-500 dark:text-white">
+                        <MdDelete style={{ color: 'red' }} />
+                      </span>
+                      <span className="text-sm font-bold ">Delete</span>
+                    </button>
+                  </div>
                 </div>
               ))}
 

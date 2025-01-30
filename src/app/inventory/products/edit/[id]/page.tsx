@@ -13,6 +13,8 @@ export default function SignInDefault({ params }: { params: { id: string } }) {
     product_name: '',
     sku_id: '',
     product_id: params.id,
+    packing: 'gm',
+    packaging: '',
   });
   const addProduct = (e) => {
     setNewdDate((prv) => ({ ...prv, [e.target.id]: e.target.value }));
@@ -23,10 +25,19 @@ export default function SignInDefault({ params }: { params: { id: string } }) {
       product_name: newdata.product_name,
       sku_id: newdata.sku_id,
       product_id: params.id,
+      packing: newdata.packing,
+      packaging: newdata.packaging,
     };
 
     try {
-      if (!data.product_name || !data.sku_id || !data.product_id) {
+      if (
+        !data.product_name ||
+        !data.sku_id ||
+        !data.product_id ||
+        !data.packaging ||
+        !data.packing
+      ) {
+        alert('Fill all the details');
         throw Error('Fill all the details');
       }
       const response = await ApiFunction({
@@ -53,7 +64,16 @@ export default function SignInDefault({ params }: { params: { id: string } }) {
       });
 
       if (response.data.length > 0) {
-        setNewdDate(response.data[0]);
+        const pack = response.data[0].packing.split(' ');
+        const packing = pack[1];
+        const packaging = pack[0];
+        setNewdDate({
+          product_name: response.data[0].product_name,
+          sku_id: response.data[0].sku_id,
+          product_id: params.id,
+          packing: packing,
+          packaging: packaging,
+        });
       }
     } catch (error) {
       console.log('error in get in edit products --> ', error);
@@ -84,51 +104,56 @@ export default function SignInDefault({ params }: { params: { id: string } }) {
               </p>
             </div>
             <div className="mb-3 grid grid-cols-12 gap-2 px-2">
-              {/* {products.length > 0 &&
-                products.map((item) => ( */}
-              <>
-                <InputField
-                  variant="auth"
-                  extra="col-span-6"
-                  label="Product Name*"
-                  placeholder="Tirrent Global"
-                  id="product_name"
-                  type="text"
-                  value={newdata.product_name}
+              <InputField
+                variant="auth"
+                extra="col-span-4"
+                label="Product Name*"
+                placeholder="Tirrent Booster"
+                id="product_name"
+                type="text"
+                value={newdata.product_name}
+                onChange={addProduct}
+              />
+              <InputField
+                variant="auth"
+                extra="col-span-3"
+                label="Product ID*"
+                placeholder="TG001TB"
+                id="sku_id"
+                type="text"
+                value={newdata.sku_id}
+                onChange={addProduct}
+              />
+              <InputField
+                variant="auth"
+                extra="col-span-2"
+                label="Packaging*"
+                placeholder="100"
+                id="packaging"
+                type="text"
+                value={newdata.packaging}
+                onChange={addProduct}
+              />
+              <div>
+                <label className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
+                  Packing
+                </label>
+                <select
+                  id="packing"
+                  name="products"
+                  className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none"
                   onChange={addProduct}
-                />
-                <InputField
-                  variant="auth"
-                  extra="col-span-5"
-                  label="Product ID*"
-                  placeholder="TG001TB"
-                  id="sku_id"
-                  type="text"
-                  value={newdata.sku_id}
-                  onChange={addProduct}
-                />
-                <button
-                  className="m-1 flex items-end justify-start p-3 text-base outline-none"
-                  // onClick={() => editProducts('delete', item.sku_id)}
+                  value={newdata.packing}
                 >
-                  <MdDelete style={{ color: 'red' }} />
-                </button>
-              </>
-              {/* ))} */}
+                  <option value="gm">gm</option>
+                  <option value="kg">kg</option>
+                  <option value="l">l</option>
+                  <option value="ml">ml</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <div
-            className="mb-4 flex items-center justify-start
-         px-2"
-          >
-            <div className="mt-2 flex items-center">
-              <Checkbox />
-              <p className="ml-2 text-sm font-medium text-navy-700 dark:text-white">
-                Order Completed
-              </p>
-            </div>
-          </div>
           <button
             onClick={editProductFunction}
             className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"

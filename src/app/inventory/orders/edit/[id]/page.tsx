@@ -8,7 +8,7 @@ import { MdAddCircleOutline, MdDelete } from 'react-icons/md';
 import ApiFunction from 'utils/useApi';
 
 export default function Page() {
-  const { products, vendors } = useContext<any>(DataContext);
+  const { stocks, vendors } = useContext<any>(DataContext);
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [vendorFromApi, setVendorFromApi] = useState<{
@@ -23,10 +23,9 @@ export default function Page() {
       setNewProduct((prv) => [
         ...prv,
         {
-          product_id: products[0].id,
+          ...stocks[0],
           price: '',
-          units: '',
-          batch_number: '',
+          available_quantity: stocks[0].units,
         },
       ]);
     } else {
@@ -59,16 +58,27 @@ export default function Page() {
 
   const handleChangeNewProduct = (e, index: any) => {
     const { id, value } = e.target;
+    if (id == 'units') {
+      if (value > newProduct[index].available_quantity) {
+        alert('More than available quantity');
+        return;
+      }
+    }
     setNewProduct((prev) => {
       let updatedProducts;
       if (id == 'product_name') {
-        const prod = products.filter(
-          (product) => product.product_name == value,
-        );
+        const product = value.split('/');
+        const product_name = product[0];
+        const product_batch = product[1];
 
+        const stock = stocks.filter(
+          (stock) =>
+            stock.product_name == product_name &&
+            stock.batch_number == product_batch,
+        );
         updatedProducts = prev.map((product, productIndex) =>
           productIndex === index
-            ? { ...product, product_id: prod[0].id }
+            ? { ...stock[0], available_quantity: stock[0].units, price: '' }
             : product,
         );
       } else {
@@ -93,7 +103,6 @@ export default function Page() {
       return updatedProducts;
     });
   };
-
   const addOrderFunction = async () => {
     const data = {
       total_price: totalPrice,
@@ -142,6 +151,8 @@ export default function Page() {
         units: product.units,
         product_id: product.product_id,
         batch_number: product.batch_number,
+        product_name: product.product_name,
+        available_quantity: product.units,
       }));
       setNewProduct([...productData]);
     } catch (error) {
@@ -218,14 +229,16 @@ export default function Page() {
                     className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none"
                     onChange={(e) => handleChangeNewProduct(e, id)}
                   >
-                    {products && products.length > 0 ? (
-                      products.map((product) => (
+                    {stocks && stocks.length > 0 ? (
+                      stocks.map((product) => (
                         <option
                           key={product.id + product.product_name}
-                          value={product.product_name}
-                          selected={product.id === productItem.product_id}
+                          value={`${product.product_name}/${product.batch_number}`}
+                          selected={
+                            productItem.product_name == product.product_name
+                          }
                         >
-                          {product.product_name}
+                          {`${product.product_name} B/No. (${product.batch_number})`}
                         </option>
                       ))
                     ) : (
@@ -256,12 +269,11 @@ export default function Page() {
                 <InputField
                   variant="auth"
                   extra="col-span-3"
-                  label="Batch Number*"
-                  placeholder="1"
-                  id="batch_number"
+                  label="Available Quantity"
+                  placeholder=""
+                  id=""
                   type="text"
-                  value={newProduct[id].batch_number}
-                  onChange={(e) => handleChangeNewProduct(e, id)}
+                  value={newProduct[id].available_quantity}
                 />
                 <button
                   onClick={() => {

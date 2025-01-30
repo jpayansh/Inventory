@@ -31,7 +31,7 @@ function SignInDefault() {
         password: '',
       });
 
-      router.push('/inventory/default');
+      router.replace('/inventory/default');
     } catch (error) {
       console.log('Error in signInFunction api-->', error);
     }

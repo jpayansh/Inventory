@@ -16,7 +16,7 @@ import NavLink from 'components/link/NavLink';
 
 type RowObj = {
   id: string;
-
+  index: number;
   created_at: string;
   updated_at: string;
   total_price: number;
@@ -30,6 +30,17 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
   const columns = [
+    columnHelper.accessor('index', {
+      id: 'index',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">S/N</p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()})
+        </p>
+      ),
+    }),
     columnHelper.accessor('total_price', {
       id: 'total_price',
       header: () => (
@@ -109,7 +120,7 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
             </button>
           </NavLink>
 
-          <NavLink href="generate-invoice">
+          <NavLink href={`/invoice/${info.getValue()}`}>
             <button className="p-1">
               <MdDownload className="m-2 text-green-500 dark:text-green-300" />
             </button>
@@ -132,7 +143,14 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
   });
   useEffect(() => {
     if (tableData.length > 0) {
-      setData(tableData);
+      setData(
+        tableData.map((data, index) => ({
+          ...data,
+          index: index + 1,
+          created_at: data.created_at.split('T')[0],
+          updated_at: data.updated_at.split('T')[0],
+        })),
+      );
     }
   }, [tableData]);
 

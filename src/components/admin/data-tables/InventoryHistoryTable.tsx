@@ -170,8 +170,14 @@ function InventoryHistoryTable(props: {
     debugTable: true,
   });
   useEffect(() => {
-    if (tableData) {
-      setData(tableData);
+    if (tableData.length > 0) {
+      setData(
+        tableData.map((data) => ({
+          ...data,
+          created_at: data.created_at.split('T')[0],
+          updated_at: data.updated_at.split('T')[0],
+        })),
+      );
     }
   }, [tableData]);
 
