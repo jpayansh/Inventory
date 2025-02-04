@@ -1,11 +1,10 @@
 'use client';
 import InputField from 'components/fields/InputField';
-import Checkbox from 'components/checkbox';
-import ApiFunction from 'utils/useApi';
 import { useContext, useEffect, useState } from 'react';
 import { DataContext } from 'contexts/DataContext';
-import { MdAddCircleOutline, MdCancel, MdDelete } from 'react-icons/md';
+import { MdAddCircleOutline, MdDelete } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
+import ApiFunction from 'utils/useApi';
 
 export default function SignInDefault() {
   const router = useRouter();
@@ -21,6 +20,7 @@ export default function SignInDefault() {
       batch_number: '',
       product_name: '',
       available_quantity: '',
+      packing: '',
     },
   ]);
 
@@ -87,7 +87,12 @@ export default function SignInDefault() {
         );
         updatedProducts = prev.map((product, productIndex) =>
           productIndex === index
-            ? { ...stock[0], available_quantity: stock[0].units, price: '' }
+            ? {
+                ...stock[0],
+                available_quantity: stock[0].units,
+                price: '',
+                packing: stock[0].packing,
+              }
             : product,
         );
       } else {
@@ -123,33 +128,42 @@ export default function SignInDefault() {
 
     console.log(data);
 
-    // try {
-    //   const response = await ApiFunction({
-    //     method: 'post',
-    //     url: 'orders',
-    //     body: { ...data },
-    //   });
+    try {
+      const response = await ApiFunction({
+        method: 'post',
+        url: 'orders',
+        body: { ...data },
+      });
 
-    //   if (!response.success) {
-    //     throw Error(response.message);
-    //   }
-    //   router.replace('/inventory/orders');
-    // } catch (error) {
-    //   console.log('error in create order api --> ', error);
-    // } finally {
-    //   setNewProduct([
-    //     { ...stocks[0], price: '', available_quantity: stocks[0].units },
-    //   ]);
-    //   setVendor(vendors[0].id);
-    //   setTotalPrice(0);
-    //   setTotalQuantity(0);
-    // }
+      if (!response.success) {
+        throw Error(response.message);
+      }
+      router.replace('/inventory/orders');
+      setNewProduct([
+        {
+          ...stocks[0],
+          price: '',
+          available_quantity: stocks[0].units,
+          packing: stocks[0].packing,
+        },
+      ]);
+      setVendor(vendors[0].id);
+      setTotalPrice(0);
+      setTotalQuantity(0);
+    } catch (error) {
+      console.log('error in create order api --> ', error);
+    }
   };
 
   useEffect(() => {
     if (vendors.length > 0 && stocks.length > 0) {
       setNewProduct([
-        { ...stocks[0], price: '', available_quantity: stocks[0].units },
+        {
+          ...stocks[0],
+          price: '',
+          available_quantity: stocks[0].units,
+          packing: stocks[0].packing,
+        },
       ]);
       setVendor(vendors[0].id);
     }
@@ -237,7 +251,7 @@ export default function SignInDefault() {
                   </div>
                   <InputField
                     variant="auth"
-                    extra="col-span-3"
+                    extra="col-span-2"
                     label="Price*"
                     placeholder="3000"
                     id="price"
@@ -257,12 +271,21 @@ export default function SignInDefault() {
                   />
                   <InputField
                     variant="auth"
-                    extra="col-span-3"
+                    extra="col-span-2"
                     label="Available Quantity"
                     placeholder=""
                     id=""
                     type="text"
                     value={newProduct[id].available_quantity}
+                  />
+                  <InputField
+                    variant="auth"
+                    extra="col-span-2"
+                    label="Packing"
+                    placeholder=""
+                    id=""
+                    type="text"
+                    value={newProduct[id].packing}
                   />
                   <div className="mb-1 flex items-end justify-center">
                     <button
@@ -299,7 +322,7 @@ export default function SignInDefault() {
               />
             </>
 
-            <div
+            {/* <div
               className="mb-4 flex items-center justify-start
          px-2"
             >
@@ -309,7 +332,7 @@ export default function SignInDefault() {
                   Order Completed
                 </p>
               </div>
-            </div>
+            </div> */}
             <button
               onClick={addOrderFunction}
               className="linear w-full rounded-xl bg-brand-500 py-3 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"

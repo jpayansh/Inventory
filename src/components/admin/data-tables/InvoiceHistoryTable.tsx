@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect } from 'react';
 
 import Card from 'components/card';
@@ -10,20 +11,24 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { MdEditSquare, MdDownload } from 'react-icons/md';
+import { MdEditSquare } from 'react-icons/md';
 import NavLink from 'components/link/NavLink';
-import { FaRegCheckCircle } from 'react-icons/fa';
-import ApiFunction from 'utils/useApi';
 import { useRouter } from 'next/navigation';
+import {
+  IoCloseCircleOutline,
+  IoCheckmarkCircleOutline,
+} from 'react-icons/io5';
+import ApiFunction from 'utils/useApi';
 
 type RowObj = {
-  id: any;
+  order_id: any;
   index: number;
   created_at: string;
   updated_at: string;
   total_price: number;
   total_units: number;
-
+  invoice_number: string;
+  completed: any;
   company_name: string;
 };
 
@@ -32,26 +37,24 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   let defaultData = tableData;
-  const createInvoiceFunction = async (id) => {
-    const body = {
-      orderId: id,
-    };
 
+  const makeInvoiceComplete = async (id) => {
     try {
       const response = await ApiFunction({
-        method: 'post',
+        method: 'put',
         url: 'invoice',
-        body: { ...body },
+        body: { invoice_id: id },
       });
 
       if (!response.success) {
         throw Error(response.message);
       }
-      router.replace('/inventory/invoices');
+      router.refresh();
     } catch (error) {
       console.log('error in create invoice api in edit order page --> ', error);
     }
   };
+
   const columns = [
     columnHelper.accessor('index', {
       id: 'index',
@@ -61,6 +64,19 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
       cell: (info) => (
         <p className="text-sm font-bold text-navy-700 dark:text-white">
           {info.getValue()})
+        </p>
+      ),
+    }),
+    columnHelper.accessor('invoice_number', {
+      id: 'invoice_number',
+      header: () => (
+        <p className="text-sm font-bold text-gray-600 dark:text-white">
+          Invoice Number
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm font-bold text-navy-700 dark:text-white">
+          {info.getValue()}
         </p>
       ),
     }),
@@ -117,44 +133,60 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
         </p>
       ),
     }),
-    columnHelper.accessor('updated_at', {
-      id: 'updated_at',
+    columnHelper.accessor('completed', {
+      id: 'completed',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          Updated At
+          Status
         </p>
       ),
-      cell: (info) => (
-        <p className="text-sm font-bold text-navy-700 dark:text-white">
-          {info.getValue()}
-        </p>
-      ),
+      cell: (info) => {
+        const orderId = info.row.original.order_id;
+        return (
+          <div className="mb-1 flex items-center justify-center">
+            {info.getValue() == true ? (
+              <button
+                disabled={true}
+                className="linear mr-2 flex items-center justify-center rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+              >
+                <span className="mr-1 text-brand-500 dark:text-white">
+                  <IoCheckmarkCircleOutline className="text-[1.2rem]" />
+                </span>
+                <span className="text-sm font-bold ">Completed</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => makeInvoiceComplete(orderId)}
+                className="linear mr-2 flex items-center justify-center rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+              >
+                <span className="mr-1 text-brand-500 dark:text-white">
+                  <IoCloseCircleOutline
+                    className="text-[1.2rem]"
+                    style={{ color: 'red' }}
+                  />
+                </span>
+                <span className="text-sm font-bold ">Complete</span>
+              </button>
+            )}
+          </div>
+        );
+      },
     }),
 
-    columnHelper.accessor('id', {
+    columnHelper.accessor('order_id', {
       id: 'btn-edit',
       header: () => <p className=""></p>,
 
       cell: (info) => (
         <div className="mb-1 flex items-center justify-center">
-          <NavLink href={`${page}/edit/${info.getValue()}`}>
+          <NavLink href={`/invoice/${info.getValue()}/${false}`}>
             <button className="linear mr-2 flex items-center justify-center rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
               <span className="mr-1 text-brand-500 dark:text-white">
                 <MdEditSquare />
               </span>
-              <span className="text-sm font-bold ">Edit</span>
+              <span className="text-sm font-bold ">Invoice</span>
             </button>
           </NavLink>
-
-          <button
-            onClick={() => createInvoiceFunction(info.getValue())}
-            className="linear flex items-center justify-center rounded-lg bg-gray-200 p-1 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
-          >
-            <span className="mr-1 text-brand-500 dark:text-white">
-              <FaRegCheckCircle />
-            </span>
-            <span className="text-md font-bold">Completed</span>
-          </button>
         </div>
       ),
     }),
@@ -179,6 +211,11 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
           index: index + 1,
           created_at: data.created_at.split('T')[0],
           updated_at: data.updated_at.split('T')[0],
+          invoice_number: `${
+            data.invoice_number_pre +
+            data.invoice_number_mid +
+            data.invoice_number
+          }`,
         })),
       );
     }
@@ -205,7 +242,7 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
                       key={header.id}
                       colSpan={header.colSpan}
                       onClick={header.column.getToggleSortingHandler()}
-                      className="cursor-pointer border-b border-gray-200 pb-2 pr-2 pt-4 text-start dark:border-white/30"
+                      className="cursor-pointer border-b border-gray-200 pb-2 pr-1 pt-4 text-start dark:border-white/30"
                     >
                       <div className="items-center justify-between text-xs text-gray-200">
                         {flexRender(
@@ -234,7 +271,7 @@ function OrdersTable(props: { tableData: any; name: string; page: string }) {
                       return (
                         <td
                           key={cell.id}
-                          className="min-w-[100px] border-white/0 py-3  pr-2"
+                          className="min-w-[95px] border-white/0 py-3 pr-1"
                         >
                           {flexRender(
                             cell.column.columnDef.cell,

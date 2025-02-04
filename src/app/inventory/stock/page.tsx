@@ -73,7 +73,7 @@ const Tables = () => {
           />
         </div>
       )}
-      {conditioner.length && (
+      {conditioner.length > 0 && (
         <div className="col-span-12">
           <InventoryTable
             deleteFromTable={deleteFromTable}

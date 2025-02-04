@@ -10,6 +10,11 @@ CREATE TABLE IF NOT EXISTS inventories(
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 );
 
+-- ALTER TABLE inventories 
+-- ADD CONSTRAINT unique_inventory UNIQUE (product_id, batch_number);
+-- for on conflict ,if the product with same batch number is already exists them it add units to it otherwise it just create new
+
+
 CREATE TABLE IF NOT EXISTS products(
     id SERIAL PRIMARY KEY,
     product_name VARCHAR(255) UNIQUE NOT NULL, 
@@ -35,9 +40,11 @@ CREATE TABLE IF NOT EXISTS orders(
     vendor_id INT REFERENCES vendors(id) ON DELETE CASCADE,
     total_price DECIMAL(10, 2) NOT NULL,   
     total_units INT NOT NULL,
+    complete BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+-- the complete in the orders table depicts that the order has been finalize to make a invoice or not
 
 CREATE TABLE IF NOT EXISTS order_products(
     order_id INT REFERENCES orders(id) ON DELETE CASCADE,
@@ -60,13 +67,16 @@ CREATE TABLE IF NOT EXISTS users(
 )
 
 CREATE TABLE IF NOT EXISTS invoices (
-    order_id INT PRIMARY KEY REFERENCES orders(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders(id) ON DELETE CASCADE,
     invoice_number_pre VARCHAR(100) NOT NULL,
     invoice_number_mid VARCHAR(100) NOT NULL,
-    invoice_number INT NOT NULL 
+    invoice_number INT NOT NULL,
+    completed BOOLEAN NOT NULL DEFAULT false, 
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+-- the completed in the invoices table depicts the order has been completly delivered or not
 
 -- want invoice number starting TG25101 and want to reset every april or new financial year
 -- 25 is the year so we manage it in the route

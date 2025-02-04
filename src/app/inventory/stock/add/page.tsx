@@ -75,9 +75,6 @@ function SignInDefault() {
         throw Error(response.message);
       }
       router.replace('/inventory/stock');
-    } catch (error) {
-      console.log('error in create order api --> ', error);
-    } finally {
       setNewProduct((prv) => [
         {
           price: '',
@@ -87,9 +84,10 @@ function SignInDefault() {
           packing: products[0].packing,
         },
       ]);
-
       setTotalPrice(0);
       setTotalQuantity(0);
+    } catch (error) {
+      console.log('error in create order api --> ', error);
     }
   };
   const handleChangeNewProduct = (e, index: any) => {
@@ -137,12 +135,8 @@ function SignInDefault() {
           packing: products[0].packing,
         },
       ]);
-
-      console.log(products);
     }
   }, [products]);
-
-  console.log(newProduct, 'newProducttt');
 
   return (
     <>

@@ -38,17 +38,18 @@ const routes = [
     path: 'orders',
   },
   {
+    name: 'Invoices',
+    layout: '/inventory',
+    icon: <MdFileCopy className="h-6 w-6" />,
+    path: 'invoices',
+  },
+  {
     name: 'Vendors',
     layout: '/inventory',
     icon: <MdOutlinePeople className="h-6 w-6" />,
     path: 'vendors',
   },
-  // {
-  //   name: 'Invoice',
-  //   layout: '/inventory',
-  //   icon: <MdFileCopy className="h-6 w-6" />,
-  //   path: 'invoice',
-  // },
+
   // {
   //   name: 'Profile',
   //   layout: '/admin',

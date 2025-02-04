@@ -1,13 +1,8 @@
 'use client';
 import InputField from 'components/fields/InputField';
-
-import Checkbox from 'components/checkbox';
-
 import ApiFunction from 'utils/useApi';
 import { useState } from 'react';
-
 import { useRouter } from 'next/navigation';
-import PopoverHorizon from 'components/popover';
 
 export default function SignInDefault() {
   const router = useRouter();

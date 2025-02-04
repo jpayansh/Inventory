@@ -4,7 +4,7 @@ import { PropsWithChildren, useState } from 'react';
 // Chakra imports
 
 // Layout components
-import { SidebarContext } from 'contexts/SidebarContext';
+
 import React from 'react';
 import { isWindowAvailable } from 'utils/navigation';
 import FixedPlugin from 'components/fixedPlugin/FixedPlugin';

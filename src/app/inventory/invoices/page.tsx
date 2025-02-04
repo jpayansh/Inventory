@@ -1,14 +1,16 @@
 'use client';
 import ApiFunction from 'utils/useApi';
-import InventoryHistoryTable from 'components/admin/data-tables/InventoryHistoryTable';
-import tableInventoryHistory from 'variables/data-tables/tableInventoryHistory';
+import InventoryHistoryTable from 'components/admin/data-tables/InvoiceHistoryTable';
 import { useEffect, useState } from 'react';
 
-const Tables = async () => {
+const Tables = () => {
   const [data, setData] = useState([]);
   const tableDataFunction = async () => {
     try {
-      const response = await ApiFunction({ url: '/api/orders' });
+      const response = await ApiFunction({ url: 'invoice' });
+      if (!response.success) {
+        throw Error('Something went wrong at the time of getting invoice api');
+      }
       setData(response.data);
       console.log(response, 'res');
     } catch (error) {
@@ -24,8 +26,8 @@ const Tables = async () => {
       <div className="mt-3">
         <InventoryHistoryTable
           tableData={data}
-          name="Inventory History"
-          page=""
+          name="Invoice Created"
+          page="invoice"
         />
       </div>
     </div>

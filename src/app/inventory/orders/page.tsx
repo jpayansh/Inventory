@@ -27,7 +27,11 @@ const Tables = () => {
   return (
     <div className="mt-3 grid grid-cols-12 gap-5">
       <div className="col-span-12">
-        <InventoryTable tableData={data} name="Orders History" page="orders" />
+        <InventoryTable
+          tableData={data}
+          name="Performer Invoice/Orders History"
+          page="orders"
+        />
       </div>
     </div>
   );

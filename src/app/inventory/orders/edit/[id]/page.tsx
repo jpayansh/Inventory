@@ -2,9 +2,11 @@
 import Checkbox from 'components/checkbox';
 import InputField from 'components/fields/InputField';
 import { DataContext } from 'contexts/DataContext';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { MdAddCircleOutline, MdDelete } from 'react-icons/md';
+import { FaRegCheckCircle } from 'react-icons/fa';
+import { MdAddCircleOutline, MdDelete, MdFileCopy } from 'react-icons/md';
 import ApiFunction from 'utils/useApi';
 
 export default function Page() {
@@ -123,9 +125,9 @@ export default function Page() {
       if (!response.success) {
         throw Error(response.message);
       }
-      router.push('/orders');
+      router.replace('/inventory/orders');
     } catch (error) {
-      console.log('error in create order api --> ', error);
+      console.log('error in create order api in edit order page --> ', error);
     }
   };
 
@@ -134,7 +136,7 @@ export default function Page() {
     try {
       const response = await ApiFunction({
         method: 'get',
-        url: `orders?order_id=${id}`,
+        url: `orders?order_id=${id}&edit_page=${true}`,
       });
 
       if (!response.success) {
@@ -152,7 +154,8 @@ export default function Page() {
         product_id: product.product_id,
         batch_number: product.batch_number,
         product_name: product.product_name,
-        available_quantity: product.units,
+        available_quantity: product.total_units,
+        packing: product.packing,
       }));
       setNewProduct([...productData]);
     } catch (error) {
@@ -202,18 +205,17 @@ export default function Page() {
             </select>
           </div>
           <div className="mt-2 flex items-center">
-            <button>
-              <MdAddCircleOutline
-                className="font-bold text-brand-500 dark:text-white"
-                style={{ color: 'green' }}
-                onClick={() => {
-                  addNewProduct('add');
-                }}
-              />
+            <button
+              className="linear flex items-center justify-center gap-1 rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+              onClick={() => {
+                addNewProduct('add');
+              }}
+            >
+              <span className="text-brand-500 dark:text-white">
+                <MdAddCircleOutline style={{ color: 'green' }} />
+              </span>
+              <span className="text-sm font-medium">Add</span>
             </button>
-            <p className="text-md ml-2 font-medium text-navy-700 dark:text-white">
-              Products
-            </p>
           </div>
 
           {newProduct &&
@@ -248,7 +250,7 @@ export default function Page() {
                 </div>
                 <InputField
                   variant="auth"
-                  extra="col-span-3"
+                  extra="col-span-2"
                   label="Price*"
                   placeholder="3000"
                   id="price"
@@ -268,23 +270,33 @@ export default function Page() {
                 />
                 <InputField
                   variant="auth"
-                  extra="col-span-3"
+                  extra="col-span-2"
                   label="Available Quantity"
                   placeholder=""
                   id=""
                   type="text"
                   value={newProduct[id].available_quantity}
                 />
-                <button
-                  onClick={() => {
-                    addNewProduct('delete', id);
-                  }}
-                >
-                  <MdDelete
-                    className="font-bold text-brand-500 dark:text-white"
-                    style={{ color: 'red' }}
-                  />
-                </button>
+                <InputField
+                  variant="auth"
+                  extra="col-span-2"
+                  label="Packing"
+                  placeholder=""
+                  id=""
+                  type="text"
+                  value={newProduct[id].packing}
+                />
+                <div className="mb-1 flex items-end justify-center">
+                  <button
+                    onClick={() => addNewProduct('delete', id)}
+                    className="linear flex items-center justify-center rounded-lg bg-gray-200 p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+                  >
+                    <span className="text-brand-500 dark:text-white">
+                      <MdDelete style={{ color: 'red' }} />
+                    </span>
+                    <span className="text-sm font-bold ">Delete</span>
+                  </button>
+                </div>
               </div>
             ))}
 
@@ -309,7 +321,7 @@ export default function Page() {
             />
           </>
 
-          <div
+          {/* <div
             className="mb-4 flex items-center justify-start
      px-2"
           >
@@ -319,6 +331,20 @@ export default function Page() {
                 Order Completed
               </p>
             </div>
+          </div> */}
+          <div className="mb-5 mt-5 flex gap-2">
+            <Link
+              href={{
+                pathname: `/invoice/${id}/${true}`,
+              }}
+            >
+              <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg border border-gray-400 bg-white  p-2 transition duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80">
+                <span className="text-brand-500 dark:text-white">
+                  <MdFileCopy />
+                </span>
+                <span className="text-md font-bold ">Preview</span>
+              </button>
+            </Link>
           </div>
           <button
             onClick={addOrderFunction}

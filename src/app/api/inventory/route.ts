@@ -60,17 +60,19 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    const inventories = await queryDb(
-      `INSERT INTO inventories (product_id, price, units, batch_number) VALUES ${query} RETURNING *;`,
+    console.log(query, 'queryyyy');
+
+    const insertOrUpdateQuery = await queryDb(
+      `INSERT INTO inventories (product_id, price, units, batch_number) VALUES ${query} ON CONFLICT (product_id, batch_number) DO UPDATE SET units = inventories.units + EXCLUDED.units, updated_at = CURRENT_TIMESTAMP RETURNING *;`,
     );
-    if (!inventories.length) {
+    if (!insertOrUpdateQuery.length) {
       throw Error(
-        'Something went wrong at the time of inserting inventories in order controller',
+        'Something went wrong at the time of inserting insertOrUpdateQuery in order controller',
       );
     }
 
     return NextResponse.json(
-      { message: 'Success', data: inventories[0], success: true },
+      { message: 'Success', data: insertOrUpdateQuery, success: true },
       { status: 200 },
     );
   } catch (error) {

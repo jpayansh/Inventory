@@ -1,16 +1,23 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Logo from '/public/img/logo/logo.png';
 import ApiFunction from 'utils/useApi';
 import { MdDownload, MdHome } from 'react-icons/md';
-import { useRouter } from 'next/navigation';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { ToWords } from 'to-words';
-function Page({ params }: { params: { id: string } }) {
+import { useRouter } from 'next/navigation';
+
+function Page({
+  params,
+}: {
+  params: { id: string; performer_invoice: string };
+}) {
   const [productDetails, setProductDetails] = useState([]);
+  const { performer_invoice, id } = params;
+
   const router = useRouter();
   const [BuyerDetails, setBuyerDetails] = useState({
     company_address: '',
@@ -19,22 +26,27 @@ function Page({ params }: { params: { id: string } }) {
     phone_number: '',
     total_price: '',
     total_units: 0,
+    invoice_number: '',
+    created_at: '',
   });
   const printRef = useRef(null);
   const words = new ToWords();
-  let amountInWords;
   const tableDataFunction = async () => {
+    const url =
+      performer_invoice == 'true'
+        ? `orders?order_id=${params.id}&edit_page=${false}`
+        : `invoice?order_id=${params.id}`;
     try {
       const response = await ApiFunction({
-        url: `invoice?order_id=${params.id}`,
+        url: url,
       });
       if (!response.success) {
         throw Error(
           'Something went wrong at the time of get api for getting invoice information',
         );
       }
-      setBuyerDetails({ ...response.data.orderData });
-      setProductDetails([...response.data.productData]);
+      setBuyerDetails(response.data?.BuyerDetails);
+      setProductDetails(response.data?.productDetails);
     } catch (error) {
       console.log(error);
     }
@@ -75,15 +87,27 @@ function Page({ params }: { params: { id: string } }) {
   return (
     <div className='className="h-full w-full font-dm dark:bg-navy-900'>
       <div className="mt-5 flex justify-around gap-2">
-        <button
-          className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
-          onClick={() => router.replace('/inventory/default')}
-        >
-          <span className="text-brand-500 dark:text-white">
-            <MdHome className="h-5 w-5" />
-          </span>
-          <span className="text-md font-bold ">Go to Dashboard</span>
-        </button>
+        {performer_invoice == 'false' ? (
+          <button
+            className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+            onClick={() => router.replace(`/inventory/invoices`)}
+          >
+            <span className="text-brand-500 dark:text-white">
+              <MdHome className="h-5 w-5" />
+            </span>
+            <span className="text-md font-bold ">Go to Invoices</span>
+          </button>
+        ) : (
+          <button
+            className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-white p-2 transition  duration-200 hover:cursor-pointer hover:opacity-90 dark:!bg-navy-800 dark:text-white dark:hover:opacity-80"
+            onClick={() => router.replace(`/inventory/orders/edit/${id}`)}
+          >
+            <span className="text-brand-500 dark:text-white">
+              <MdHome className="h-5 w-5" />
+            </span>
+            <span className="text-md font-bold ">Go to Edit Orders</span>
+          </button>
+        )}
 
         <button
           onClick={handleDownloardPdf}
@@ -102,7 +126,7 @@ function Page({ params }: { params: { id: string } }) {
       >
         <div className="border-black-200 max-w-full rounded-lg bg-white p-5">
           <h1 className="mb-5 text-center text-[22px] font-bold">
-            TAX INVOICE
+            {performer_invoice == 'true' ? 'PERFORMER INVOICE' : 'TAX INVOICE'}
           </h1>
           <div className="mb-5">
             <Image
@@ -111,7 +135,7 @@ function Page({ params }: { params: { id: string } }) {
               alt="Company-Logo"
             />
           </div>
-          <div className="text-black-900 flex justify-between">
+          <div className="text-black-900 mb-5 flex justify-between">
             <div className="text-[14px]">
               <h3 className="font-bold">{seller.name}</h3>
               <p>{seller.address}</p>
@@ -119,14 +143,16 @@ function Page({ params }: { params: { id: string } }) {
               <p>M.No.: {seller.phone}</p>
               <p>Email: {seller.email}</p>
             </div>
-            <div className="mb-5 bg-yellow-100 pb-10 pl-8 pr-8 pt-10 leading-relaxed">
-              <p>
-                <strong>Invoice Date:</strong> -
-              </p>
-              <p>
-                <strong>Invoice Number:</strong> -
-              </p>
-            </div>
+            {performer_invoice == 'false' && (
+              <div className="bg-yellow-100 pb-10 pl-8 pr-8 pt-10 leading-relaxed">
+                <p>
+                  <strong>Invoice Date:</strong> {BuyerDetails.invoice_number}
+                </p>
+                <p>
+                  <strong>Invoice Number:</strong> {BuyerDetails.created_at}
+                </p>
+              </div>
+            )}
           </div>
           <div className="text-[14px]">
             <p>
@@ -159,7 +185,7 @@ function Page({ params }: { params: { id: string } }) {
                   <tr key={index}>
                     <td className="border border-gray-900 p-1">{index + 1}</td>
                     <td className="border border-gray-900 p-1">
-                      {product.product_name}
+                      {product.product_name} {product.packing}
                     </td>
                     <td className="border border-gray-900 p-1">
                       {product.price}

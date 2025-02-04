@@ -4,15 +4,16 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const { searchParams } = await request.nextUrl;
   const orderId = searchParams.get('order_id');
+  const editPage = searchParams.get('edit_page');
   let query = '';
-  let products = [];
 
   try {
-    if (orderId) {
-      query = `SELECT order_products.price, products.product_name,order_products.units, order_products.batch_number, orders.total_price,orders.total_units,orders.vendor_id,order_products.product_id FROM order_products INNER JOIN orders ON order_products.order_id = orders.id INNER JOIN products ON order_products.product_id = products.id WHERE order_products.order_id = ${orderId};`;
+    if (editPage == 'true' && orderId) {
+      query = `SELECT orders.vendor_id, order_products.price, products.packing,products.product_name,order_products.units, order_products.batch_number, orders.total_price,orders.total_units,orders.vendor_id,order_products.product_id FROM order_products INNER JOIN orders ON order_products.order_id = orders.id INNER JOIN products ON order_products.product_id = products.id WHERE order_products.order_id = ${orderId} AND orders.complete = ${false};`;
+    } else if (editPage == 'false' && orderId) {
+      query = `SELECT vendors.company_name,vendors.company_address,vendors.phone_number,vendors.gst_number,order_products.price, products.packing,products.product_name,order_products.units, order_products.batch_number, orders.total_price,orders.total_units,orders.vendor_id,order_products.product_id FROM order_products INNER JOIN orders ON order_products.order_id = orders.id INNER JOIN vendors ON vendors.id = orders.vendor_id  INNER JOIN products ON order_products.product_id = products.id WHERE order_products.order_id = ${orderId} AND orders.complete = ${false};`;
     } else {
-      query =
-        'SELECT orders.total_price, orders.id, orders.total_units, vendors.company_name, orders.created_at, orders.updated_at FROM orders INNER JOIN vendors ON orders.vendor_id = vendors.id;';
+      query = `SELECT orders.total_price, orders.id, orders.total_units, vendors.company_name, orders.created_at, orders.updated_at FROM orders INNER JOIN vendors ON orders.vendor_id = vendors.id WHERE orders.complete = ${false};`;
     }
 
     const ordersData = await queryDb(query);
@@ -23,9 +24,30 @@ export async function GET(request: NextRequest) {
         { status: 404 },
       );
     }
+    let BuyerDetails = {
+        company_address: ordersData[0].company_address,
+        company_name: ordersData[0].company_name,
+        gst_number: ordersData[0].gst_number,
+        phone_number: ordersData[0].phone_number,
+        total_price: ordersData[0].total_price,
+        total_units: ordersData[0].total_units,
+        created_at: ordersData[0].created_at,
+      },
+      productDetails = ordersData.map((order) => ({
+        product_name: order.product_name,
+        packing: order.packing,
+        price: order.price,
+        units: order.units,
+        batch_number: order.batch_number,
+      }));
+    const data = !orderId
+      ? ordersData
+      : editPage == 'true'
+      ? ordersData
+      : { BuyerDetails, productDetails };
 
     return NextResponse.json(
-      { message: 'Success', data: ordersData, success: true },
+      { message: 'Success', data: data, success: true },
       { status: 200 },
     );
   } catch (error) {
@@ -79,30 +101,30 @@ export async function POST(request: NextRequest) {
 
     // Start transaction
 
-    for (const product of products) {
-      const remainingUnits = Math.max(
-        0,
-        product.available_quantity - parseInt(product.units),
-      );
-      const productDetails = await queryDb(
-        'UPDATE inventory_product SET units = $1, updated_at = $2 WHERE product_id = $3 AND batch_number = $4 RETURNING *;',
-        [
-          remainingUnits,
-          new Date(Date.now()).toISOString(),
-          product.product_id,
-          product.batch_number,
-        ],
-      );
+    // for (const product of products) {
+    //   const remainingUnits = Math.max(
+    //     0,
+    //     product.available_quantity - parseInt(product.units),
+    //   );
+    //   const productDetails = await queryDb(
+    //     'UPDATE inventory_product SET units = $1, updated_at = $2 WHERE product_id = $3 AND batch_number = $4 RETURNING *;',
+    //     [
+    //       remainingUnits,
+    //       new Date(Date.now()).toISOString(),
+    //       product.product_id,
+    //       product.batch_number,
+    //     ],
+    //   );
 
-      if (!productDetails.length) throw new Error('Failed to update inventory');
+    //   if (!productDetails.length) throw new Error('Failed to update inventory');
 
-      const inventoriesEditDetails = await queryDb(
-        'UPDATE inventories SET total_units = total_units - $1, updated_at = $2, total_price = $3 WHERE id = $4 RETURNING *',
-        [parseInt(product.units), new Date(Date.now()).toISOString()],
-      );
-      if (!inventoriesEditDetails.length)
-        throw new Error('Failed to update inventories');
-    }
+    //   const inventoriesEditDetails = await queryDb(
+    //     'UPDATE inventories SET total_units = total_units - $1, updated_at = $2, total_price = $3 WHERE id = $4 RETURNING *',
+    //     [parseInt(product.units), new Date(Date.now()).toISOString()],
+    //   );
+    //   if (!inventoriesEditDetails.length)
+    //     throw new Error('Failed to update inventories');
+    // }
 
     // Commit transaction
     await queryDb('COMMIT');
@@ -195,42 +217,42 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const existingProductIds = await queryDb(
-      'SELECT product_id FROM order_products WHERE order_id = $1',
-      [order_id],
-    );
-    let productsToRemove = [];
-    let inventoryRestore = [];
+    // const existingProductIds = await queryDb(
+    //   'SELECT product_id FROM order_products WHERE order_id = $1',
+    //   [order_id],
+    // );
+    // let productsToRemove = [];
+    // let inventoryRestore = [];
 
-    // Determine products to delete and restore inventory
-    for (const { product_id, units, batch_number } of existingProductIds) {
-      if (!products.some((p) => p.product_id === product_id)) {
-        productsToRemove.push(product_id);
-        inventoryRestore.push({ product_id, units, batch_number });
-      }
-    }
-    if (productsToRemove.length > 0) {
-      //adding the units in inventory_product
-      for (const product of inventoryRestore) {
-        const productDetails = await queryDb(
-          `UPDATE inventory_product SET units = units + $1, updated_at = $2 WHERE product_id = $3 AND batch_number = $4 RETURNING *;`,
-          [
-            product.units,
-            new Date(Date.now()).toISOString(),
-            product.product_id,
-            product.batch_number,
-          ],
-        );
+    // // Determine products to delete and restore inventory
+    // for (const { product_id, units, batch_number } of existingProductIds) {
+    //   if (!products.some((p) => p.product_id === product_id)) {
+    //     productsToRemove.push(product_id);
+    //     inventoryRestore.push({ product_id, units, batch_number });
+    //   }
+    // }
+    // if (productsToRemove.length > 0) {
+    //   //adding the units in inventory_product
+    //   for (const product of inventoryRestore) {
+    //     const productDetails = await queryDb(
+    //       `UPDATE inventory_product SET units = units + $1, updated_at = $2 WHERE product_id = $3 AND batch_number = $4 RETURNING *;`,
+    //       [
+    //         product.units,
+    //         new Date(Date.now()).toISOString(),
+    //         product.product_id,
+    //         product.batch_number,
+    //       ],
+    //     );
 
-        if (!productDetails.length)
-          throw new Error('Failed to update inventory');
-      }
+    //     if (!productDetails.length)
+    //       throw new Error('Failed to update inventory');
+    //   }
 
-      //deleting the order_products of these ids
-      const deleteQuery =
-        'DELETE FROM order_products WHERE order_id = $1 AND product_id = ANY($2)';
-      await queryDb(deleteQuery, [order_id, productsToRemove]);
-    }
+    //   //deleting the order_products of these ids
+    //   const deleteQuery =
+    //     'DELETE FROM order_products WHERE order_id = $1 AND product_id = ANY($2)';
+    //   await queryDb(deleteQuery, [order_id, productsToRemove]);
+    // }
 
     // Prepare bulk insert or update query for order_products
     const values = products
@@ -251,23 +273,23 @@ export async function PUT(request: NextRequest) {
     const result = await queryDb(insertOrUpdateQuery);
 
     //update the inventory units
-    for (const product of products) {
-      const remainingUnits = Math.max(
-        0,
-        product.available_quantity - parseInt(product.units),
-      );
-      const productDetails = await queryDb(
-        'UPDATE inventory_product SET units = $1, updated_at = $2 WHERE product_id = $3 AND batch_number = $4 RETURNING *;',
-        [
-          remainingUnits,
-          new Date(Date.now()).toISOString(),
-          product.product_id,
-          product.batch_number,
-        ],
-      );
+    // for (const product of products) {
+    //   const remainingUnits = Math.max(
+    //     0,
+    //     product.available_quantity - parseInt(product.units),
+    //   );
+    //   const productDetails = await queryDb(
+    //     'UPDATE inventory_product SET units = $1, updated_at = $2 WHERE product_id = $3 AND batch_number = $4 RETURNING *;',
+    //     [
+    //       remainingUnits,
+    //       new Date(Date.now()).toISOString(),
+    //       product.product_id,
+    //       product.batch_number,
+    //     ],
+    //   );
 
-      if (!productDetails.length) throw new Error('Failed to update inventory');
-    }
+    //   if (!productDetails.length) throw new Error('Failed to update inventory');
+    // }
 
     // Commit transaction
     await queryDb('COMMIT');
