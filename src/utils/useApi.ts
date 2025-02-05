@@ -4,7 +4,7 @@ const ApiFunction = async ({ method = 'get', body = null, url }) => {
   try {
     var response = await axios({
       method,
-      url: `http://localhost:3000/api/${url}`,
+      url: `/api/${url}`,
       ...(method == 'post' || method == 'put' || method == 'delete'
         ? { data: body }
         : { body }),
